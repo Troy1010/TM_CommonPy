@@ -64,3 +64,9 @@ class Test_TM_CommonPy(TestCase):
             b = True
         shutil.rmtree('Examples_TmpCopy')
         self.assertTrue(b)
+
+    #---GetDictCount
+    def test_GetDictCount_ByExample(self):
+        cDict = {"age":25,"blue":3,"cat":5}
+        b = TMC.GetDictCount(cDict) == 3
+        self.assertTrue(b)

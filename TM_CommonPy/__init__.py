@@ -40,6 +40,9 @@ def Copy(src,root_dst_dir):
     else:
         print("Copy\Error\src "+src+" is not a valid file or directory")
 
+def GetDictCount(cDict):
+    return len(cDict.values())
+
 #not tested
 def TryMakeDirs(sDir):
     if not os.path.exists(sDir):
