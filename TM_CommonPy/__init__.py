@@ -44,6 +44,25 @@ def Copy(src,root_dst_dir):
 def GetDictCount(cDict):
     return len(cDict.values())
 
+
+#not tested
+#vElemToFind must be 1 dimentional
+def FindElem(vElemToFind,vTreeToSearch):
+    bFound = False
+    for vElem in vTreeToSearch.iter():
+        if vElemToFind.tag in vElem.tag:
+            for vKey,vValue in vElemToFind.attrib.items():
+                bFound = True
+                if not vKey in vElem.attrib and vElem.attrib[vKey] == vValue:
+                    bFound = False
+                    break
+        if bFound:
+            break
+    if not bFound:
+        return
+    else:
+        return vElem
+
 #not tested
 def TryMakeDirs(sDir):
     if not os.path.exists(sDir):

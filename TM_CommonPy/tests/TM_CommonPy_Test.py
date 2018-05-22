@@ -1,7 +1,9 @@
 from unittest import TestCase
+from nose.tools import *
 import os
 import shutil
 import sys
+import xml.etree.ElementTree
 
 
 def __Copy(src,root_dst_dir):
@@ -70,8 +72,38 @@ class Test_TM_CommonPy(TestCase):
         shutil.rmtree('Examples_TmpCopy')
         self.assertTrue(b)
 
+    def test_FindElem(self):
+        #---Open
+        TMC.Copy('Examples','Examples_FindElem')
+        #---
+        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_FindElem','ExampleXML.xml'))
+        vElemToFind = xml.etree.ElementTree.Element("ProjectConfiguration", Include="Debug|Win32")
+        vFoundElem = TMC.FindElem(vElemToFind,vTree)
+        self.assertTrue(vFoundElem[0].tag == "{http://schemas.microsoft.com/developer/msbuild/2003}Configuration" and vFoundElem[0].text == "Debug")
+        self.assertTrue(vFoundElem[1].tag == "{http://schemas.microsoft.com/developer/msbuild/2003}Platform" and vFoundElem[1].text == "Win32")
+        #---Close
+        shutil.rmtree('Examples_FindElem')
+
+    def test_FindElem_FindNothing(self):
+        #---Open
+        TMC.Copy('Examples','Examples_FindElem')
+        #---
+        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_FindElem','ExampleXML.xml'))
+        vElemToFind = xml.etree.ElementTree.Element("asdffdasfsdfg", Include="sfghdghrtd")
+        vFoundElem = TMC.FindElem(vElemToFind,vTree)
+        self.assertTrue(vFoundElem is None)
+        #---Close
+        shutil.rmtree('Examples_FindElem')
+
+
     #---GetDictCount
     def test_GetDictCount_ByExample(self):
         cDict = {"age":25,"blue":3,"cat":5}
-        b = TMC.GetDictCount(cDict) == 3
-        self.assertTrue(b)
+        self.assertTrue(TMC.GetDictCount(cDict) == 3)
+
+    #------Extra tests
+    def test_Does_And_ShortCircuit(self):
+        dict1 = {"zeed":1,"beep":2}
+        for vKey,vValue in dict1.items():
+            if "boop" in dict1 and dict1["boop"] == 1:
+                pass
