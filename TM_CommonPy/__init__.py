@@ -1,5 +1,4 @@
 import os, sys
-import io
 import importlib
 import pip
 import xml.etree.ElementTree
@@ -10,14 +9,16 @@ def GetScriptRoot():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 def GetFileContent(sFile):
-    with open(sFile,'r') as f:
-        sContent = f.read()
+    vFile = open(sFile,'r')
+    sContent = vFile.read()
+    vFile.close()
     return sContent
 
+#Works fine for non-BOM XML files.. but runs into trouble otherwise.
 def GetXMLNamespaces(sXMLFile):
     cNamespaces = dict([
         node for _, node in xml.etree.ElementTree.iterparse(
-            io.StringIO(GetFileContent(sXMLFile)), events=['start-ns']
+            sXMLFile, events=['start-ns']
         )
     ])
     return cNamespaces
@@ -38,7 +39,7 @@ def Copy(src,root_dst_dir):
         dst_dir = src_dir.replace(src, root_dst_dir, 1)
         shutil.copy(src, dst_dir)
     else:
-        print("Copy\Error\src "+src+" is not a valid file or directory")
+        print("Copy|Error|src "+src+" is not a valid file or directory")
 
 def GetDictCount(cDict):
     return len(cDict.values())

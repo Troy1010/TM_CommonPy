@@ -35,6 +35,7 @@ class Test_TM_CommonPy(TestCase):
     #?where to chdir?
     os.chdir(os.path.join('TM_CommonPy','tests'))
     sExampleXMLFile = os.path.join('Examples','ExampleXML.xml')
+    sExampleXML_HasBOM = os.path.join('Examples','ExampleXML_HasBOM.xml')
     sExampleTXTFile = os.path.join('Examples','ExampleTXT.txt')
 
     def test_GetScriptRoot_IsString(self):
@@ -55,6 +56,10 @@ class Test_TM_CommonPy(TestCase):
 
     def test_GetXMLNamespaces_ByExample(self):
         b = str(TMC.GetXMLNamespaces(self.sExampleXMLFile)) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
+        self.assertTrue(b)
+
+    def test_GetXMLNamespaces_ByExample_HasBOM(self):
+        b = str(TMC.GetXMLNamespaces(self.sExampleXML_HasBOM)) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
         self.assertTrue(b)
 
     def test_Copy_ByExample(self):
