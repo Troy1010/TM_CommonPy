@@ -8,7 +8,7 @@ import xml.etree.ElementTree
 import TM_CommonPy as TMC
 import TM_CommonPy.Narrator as TMC_NAR
 
-
+#legacy
 def __Copy(src,root_dst_dir):
     if os.path.isdir(src):
         for src_dir, dirs, files in os.walk(src):
@@ -26,17 +26,33 @@ def __Copy(src,root_dst_dir):
         shutil.copy(src, dst_dir)
     else:
         print("__Copy\\Error\\src is not a valid file or directory")
-__Copy('Examples_Backup','Examples')
 
 
 
 
 class Test_TM_CommonPy(unittest.TestCase):
-    #?where to chdir?
-    os.chdir(os.path.join('TM_CommonPy','tests'))
-    sExampleXMLFile = os.path.join('Examples','ExampleXML.xml')
-    sExampleXML_HasBOM = os.path.join('Examples','ExampleXML_HasBOM.xml')
-    sExampleTXTFile = os.path.join('Examples','ExampleTXT.txt')
+
+    sExampleXMLFile = 'ExampleXML.xml'
+    sExampleXML_HasBOM = 'ExampleXML_HasBOM.xml'
+    sExampleTXTFile = 'ExampleTXT.txt'
+
+    @classmethod
+    def setUpClass(self):
+        os.chdir(os.path.join('TM_CommonPy','tests'))
+
+    @classmethod
+    def tearDownClass(self):
+        pass
+
+    def setUp(self):
+        TMC.Copy('Examples_Backup','Examples')
+        os.chdir('Examples')
+
+    def tearDown(self):
+        os.chdir('..')
+        shutil.rmtree('Examples')
+
+    #------Tests
 
     def test_GetScriptRoot_IsString(self):
         s = TMC.GetScriptRoot()
@@ -51,7 +67,7 @@ class Test_TM_CommonPy(unittest.TestCase):
         self.assertTrue(b)
 
     def test_GetFileContent_ByExample2(self):
-        b = TMC.GetFileContent(self.sExampleTXTFile) == "I am example txt.\nHear me. Or, read me, maybe."
+        b = TMC.GetFileContent(self.sExampleTXTFile) == "tyurityihghty"
         self.assertTrue(not b)
 
     def test_GetXMLNamespaces_ByExample(self):
@@ -63,52 +79,40 @@ class Test_TM_CommonPy(unittest.TestCase):
         self.assertTrue(b)
 
     def test_Copy_ByExample(self):
-        TMC.Copy('Examples','Examples_TmpCopy')
         b = False
-        if os.path.isfile(os.path.join('Examples_TmpCopy','ExampleXML.xml')) and os.path.isfile(os.path.join('Examples_TmpCopy','ExampleTXT.txt')):
+        if os.path.isfile('ExampleXML.xml') and os.path.isfile('ExampleTXT.txt'):
             b = True
-        shutil.rmtree('Examples_TmpCopy')
         self.assertTrue(b)
 
     def test_FindElem(self):
-        #---Open
-        TMC.Copy('Examples','Examples_FindElem')
-        #---
-        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_FindElem','ExampleXML.xml'))
+        vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vElemToFind = xml.etree.ElementTree.Element("ProjectConfiguration", Include="Debug|Win32")
         vFoundElem = TMC.FindElem(vElemToFind,vTree)
         self.assertTrue(vFoundElem[0].tag == "{http://schemas.microsoft.com/developer/msbuild/2003}Configuration" and vFoundElem[0].text == "Debug")
         self.assertTrue(vFoundElem[1].tag == "{http://schemas.microsoft.com/developer/msbuild/2003}Platform" and vFoundElem[1].text == "Win32")
-        #---Close
-        shutil.rmtree('Examples_FindElem')
 
     def test_FindElem_FindNothing(self):
-        #---Open
-        TMC.Copy('Examples','Examples_FindElem')
-        #---
-        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_FindElem','ExampleXML.xml'))
+        vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vElemToFind = xml.etree.ElementTree.Element("asdffdasfsdfg", Include="sfghdghrtd")
         vFoundElem = TMC.FindElem(vElemToFind,vTree)
         self.assertTrue(vFoundElem is None)
-        #---Close
-        shutil.rmtree('Examples_FindElem')
 
     def test_NarrateElem(self):
-        #---Open
-        TMC.Copy('Examples','Examples_NarrateElem')
-        #---
-        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_NarrateElem','ExampleXML.xml'))
+        vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
         print(TMC_NAR.NarrateElem(vRoot))
         #self.assertTrue(False)
-        #---Close
-        shutil.rmtree('Examples_NarrateElem')
-
 
     #---GetDictCount
     def test_GetDictCount_ByExample(self):
         cDict = {"age":25,"blue":3,"cat":5}
         self.assertTrue(TMC.GetDictCount(cDict) == 3)
+
+    def test_RunPowershellScript_Try(self):
+        print(os.path.join(os.getcwd(),'HelloWorld.ps1'))
+        TMC.RunPowershellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
+        #TMC.RunPowershellScript('HelloWorld.ps1')
+        #self.assertTrue(False)
 
     #------Extra tests
     def test_Does_And_ShortCircuit(self):
@@ -116,6 +120,17 @@ class Test_TM_CommonPy(unittest.TestCase):
         for vKey,vValue in dict1.items():
             if "boop" in dict1 and dict1["boop"] == 1:
                 pass
+
+
+    #def test_RunPowershellScript_Try(self):
+    #    #---Open
+    #    TMC.Copy('Examples','Examples_RunPowershellScript_Try')
+    #    #---
+    #    TMC.RunPowershellScript(os.path.join(os.getcwd(),'Examples_RunPowershellScript_Try','HelloWorld.ps1'))
+    #    self.assertTrue(False)
+    #    #---Close
+    #    shutil.rmtree('Examples_NarrateElem')
+
 
 #    def test_WhatIsThisTrueFalse(self):
 #        #---Open

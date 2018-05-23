@@ -3,6 +3,7 @@ import importlib
 import pip
 import xml.etree.ElementTree
 import shutil
+import subprocess
 
 
 #beta
@@ -91,6 +92,11 @@ def FindElem(vElemToFind,vTreeToSearch):
     #-Couldn't find
     return
 
+#dev
+def RunPowershellScript(sScriptFile):
+    vProcess = subprocess.Popen(["powershell.exe","-executionpolicy ","bypass","-file",sScriptFile])
+    vProcess.communicate()
+    return vProcess
 
 
 #dev
