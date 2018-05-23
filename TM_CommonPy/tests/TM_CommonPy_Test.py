@@ -1,9 +1,12 @@
-from unittest import TestCase
+import unittest
 from nose.tools import *
 import os
 import shutil
 import sys
 import xml.etree.ElementTree
+
+import TM_CommonPy as TMC
+import TM_CommonPy.Narrator as TMC_NAR
 
 
 def __Copy(src,root_dst_dir):
@@ -25,15 +28,10 @@ def __Copy(src,root_dst_dir):
         print("__Copy\\Error\\src is not a valid file or directory")
 __Copy('Examples_Backup','Examples')
 
-try:
-    import TM_CommonPy as TMC
-except:
-    sys.path.append(os.path.join(__file__,'..','..','..'))
-    import TM_CommonPy as TMC
 
 
 
-class Test_TM_CommonPy(TestCase):
+class Test_TM_CommonPy(unittest.TestCase):
     #?where to chdir?
     os.chdir(os.path.join('TM_CommonPy','tests'))
     sExampleXMLFile = os.path.join('Examples','ExampleXML.xml')
@@ -95,6 +93,17 @@ class Test_TM_CommonPy(TestCase):
         #---Close
         shutil.rmtree('Examples_FindElem')
 
+    def test_NarrateElem(self):
+        #---Open
+        TMC.Copy('Examples','Examples_NarrateElem')
+        #---
+        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_NarrateElem','ExampleXML.xml'))
+        vRoot = vTree.getroot()
+        print(TMC_NAR.NarrateElem(vRoot))
+        #self.assertTrue(False)
+        #---Close
+        shutil.rmtree('Examples_NarrateElem')
+
 
     #---GetDictCount
     def test_GetDictCount_ByExample(self):
@@ -107,3 +116,15 @@ class Test_TM_CommonPy(TestCase):
         for vKey,vValue in dict1.items():
             if "boop" in dict1 and dict1["boop"] == 1:
                 pass
+
+#    def test_WhatIsThisTrueFalse(self):
+#        #---Open
+#        TMC.Copy('Examples','Examples_WhatIsThisTrueFalse')
+#        #---
+#        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_WhatIsThisTrueFalse','ExampleXML.xml'))
+#        for vElem in vTree.iter():
+#            print("vElem.tag:"+str(vElem.tag))
+#            print("vElem.text:"+str(vElem.text))
+#        self.assertTrue(False)
+#        #---Close
+#        shutil.rmtree('Examples_WhatIsThisTrueFalse')

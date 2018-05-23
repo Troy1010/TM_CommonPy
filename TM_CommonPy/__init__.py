@@ -4,6 +4,8 @@ import pip
 import xml.etree.ElementTree
 import shutil
 
+
+#beta
 #Maybe use __file__ instead?
 def GetScriptRoot():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -44,31 +46,59 @@ def Copy(src,root_dst_dir):
 def GetDictCount(cDict):
     return len(cDict.values())
 
+#alpha
+def IsEmpty(cCollection):
+    #---None
+    if cCollection is None:
+        return True
+    #---Dict
+    if isinstance(cCollection,dict):
+        cCollection = cCollection.items()
+    #---NotACollection
+    try:
+        for vKey,vValue in cCollection:
+            pass
+    except:
+        return True
+    #---Empty
+    if len(cCollection) ==0:
+        return True
 
-#not tested
-#vElemToFind must be 1 dimentional
+
+#beta
 def FindElem(vElemToFind,vTreeToSearch):
-    bFound = False
     for vElem in vTreeToSearch.iter():
-        if vElemToFind.tag in vElem.tag:
-            for vKey,vValue in vElemToFind.attrib.items():
-                bFound = True
-                if not vKey in vElem.attrib and vElem.attrib[vKey] == vValue:
-                    bFound = False
-                    break
+        bFound = True
+        #-tag or text differences?
+        if not (vElemToFind.tag in vElem.tag and ((vElemToFind.text == vElem.text) or (vElemToFind.text is None))):
+            bFound = False
+            continue
+        #-attrib differences?
+        for vKey,vValue in vElemToFind.attrib.items():
+            if not ((vKey in vElem.attrib) and (vElem.attrib[vKey] == vValue)):
+                bFound = False
+                break
+        if not bFound:
+            continue
+        #-child differences?
+        for vElemToFindChild in vElemToFind:
+            if FindElem(vElemToFindChild,vElem) is None:
+                bFound = False
+                break
+        #-If there are still no differences, we found it. Return the element
         if bFound:
-            break
-    if not bFound:
-        return
-    else:
-        return vElem
+            return vElem
+    #-Couldn't find
+    return
 
-#not tested
+
+
+#dev
 def TryMakeDirs(sDir):
     if not os.path.exists(sDir):
         os.makedirs(sDir)
 
-#not tested
+#dev
 def InstallAndImport(package):
     try:
         importlib.import_module(package)
