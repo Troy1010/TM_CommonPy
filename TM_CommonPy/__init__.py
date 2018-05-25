@@ -93,8 +93,8 @@ def FindElem(vElemToFind,vTreeToSearch):
     return
 
 #dev
-def RunPowershellScript(sScriptFile):
-    vProcess = subprocess.Popen(["powershell.exe","-executionpolicy ","bypass","-file",sScriptFile])
+def RunPowerShellScript(sScriptFile):
+    vProcess = subprocess.Popen(["powershell.exe","-executionpolicy ","bypass","-file",sScriptFile], shell=True)
     vProcess.communicate()
     return vProcess
 

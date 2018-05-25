@@ -27,7 +27,14 @@ def __Copy(src,root_dst_dir):
     else:
         print("__Copy\\Error\\src is not a valid file or directory")
 
+class TestObj():
+    Name = "TestObject"
 
+    def TestMethod(self):
+        print("Hiii I'm the Test Object")
+
+    def TypeMethod(self):
+        print("Hiii I'm the Test Object")
 
 
 class Test_TM_CommonPy(unittest.TestCase):
@@ -97,10 +104,36 @@ class Test_TM_CommonPy(unittest.TestCase):
         vFoundElem = TMC.FindElem(vElemToFind,vTree)
         self.assertTrue(vFoundElem is None)
 
-    def test_NarrateElem(self):
+    def test_Narrate_Elem(self):
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
-        print(TMC_NAR.NarrateElem(vRoot))
+        print(TMC_NAR.Narrate(vRoot))
+        #self.assertTrue(False)
+
+    def test_Narrate_Collection(self):
+        cArray = [30,40,80,10]
+        print(TMC_NAR.Narrate(cArray))
+        #self.assertTrue(False)
+
+    def test_Narrate_Bool(self):
+        print(TMC_NAR.Narrate(True))
+        print(TMC_NAR.Narrate(False))
+        #self.assertTrue(False)
+
+    def test_Narrate_None(self):
+        print(TMC_NAR.Narrate(None))
+        #self.assertTrue(False)
+
+    def test_Narrate_UnknownObj(self):
+        vObj = TestObj()
+        print(TMC_NAR.Narrate(vObj))
+        self.assertTrue(False)
+
+    def test_Narrate_Object2(self):
+        vObj = TestObj()
+        print(TMC_NAR.NarrateObject(vObj))
+        print("========")
+        print(TMC_NAR.NarrateObject(vObj, bNoExtras=True))
         #self.assertTrue(False)
 
     #---GetDictCount
@@ -110,7 +143,7 @@ class Test_TM_CommonPy(unittest.TestCase):
 
     def test_RunPowershellScript_Try(self):
         print(os.path.join(os.getcwd(),'HelloWorld.ps1'))
-        TMC.RunPowershellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
+        TMC.RunPowerShellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
         #TMC.RunPowershellScript('HelloWorld.ps1')
         #self.assertTrue(False)
 
@@ -120,6 +153,23 @@ class Test_TM_CommonPy(unittest.TestCase):
         for vKey,vValue in dict1.items():
             if "boop" in dict1 and dict1["boop"] == 1:
                 pass
+
+    def test_CanYouKeyValueArrays(self):
+        #array1 = [30,60,80,50]
+        #for vKey, vValue in array1:
+        #    print(str(vKey)+":"+str(vValue))
+        pass
+
+    def test_CanYouIterateNone(self):
+        #vNone = None
+        #for vChild in None:
+        #    print("I'm alive!")
+        pass
+
+    def test_CanYouDelFromEmptyDict(self):
+        #cDict = {}
+        #del cDict["tre"]
+        pass
 
 
     #def test_RunPowershellScript_Try(self):
