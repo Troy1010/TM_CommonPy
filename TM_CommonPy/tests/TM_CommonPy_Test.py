@@ -127,14 +127,14 @@ class Test_TM_CommonPy(unittest.TestCase):
     def test_Narrate_UnknownObj(self):
         vObj = TestObj()
         print(TMC_NAR.Narrate(vObj))
-        self.assertTrue(False)
+        #self.assertTrue(False)
 
     def test_Narrate_Object2(self):
         vObj = TestObj()
         print(TMC_NAR.NarrateObject(vObj))
         print("========")
-        print(TMC_NAR.NarrateObject(vObj, bNoExtras=True))
-        #self.assertTrue(False)
+        print(TMC_NAR.NarrateObject(vObj, bInverseExtras=True))
+        self.assertTrue(False)
 
     #---GetDictCount
     def test_GetDictCount_ByExample(self):

@@ -72,38 +72,42 @@ def Narrate(vVar, bMultiLine = True):
     __self.iRecursionLvl -= 1
     return sReturning
 
-def NarrateObject(vObj, bIncludePrivate = False, cExcludeMethods = [], cExcludeProperties = [], bNoMethods = False, bNoProperties = False, bNoExtras = False, cExcludeExtras = []):
+#cMembers are exclusionary if they start full, inclusionary if they start empty.
+def NarrateObject(vObj, bIncludePrivate=False, cMembers=[], bStartFull=True):
+    return NarrateObject_Options(vObj, bIncludePrivate, cMembers, cMembers, cMembers, bStartFull, bStartFull, bStartFull)
+
+#cMethods, cProperties, cExtras are exclusionary if they start full, inclusionary if they start empty.
+def NarrateObject_Options(vObj, bIncludePrivate = False, cMethods = [], cProperties = [], cExtras = [], bMethodsStartFull = True, bPropertiesStartFull = True, bExtrasStartFull = True):
     #------Reflection
     #---Reflect the object's members
     if not bIncludePrivate:
         cMembers = [x for x in dir(vObj) if not "__" in x]
     else:
         cMembers = dir(vObj)
-    #---Seperate the methods from the properties
-    if bNoMethods:
-        cMethods = []
+    #---Seperate cMethodsBeingNarrated and cPropertiesBeingNarrated from cMembers. Define cExtrasBeingNarrated.
+    cExtrasBeingNarrated = {"Type":str(type(vObj))}
+    cPropertiesBeingNarrated = [a for a in cMembers if not callable(getattr(vObj, a))]
+    cMethodsBeingNarrated = [a for a in cMembers if callable(getattr(vObj, a))]
+    #------Exclusion/Inclusion
+    if bExtrasStartFull:
+        cExtrasBeingNarrated = { k : cExtrasBeingNarrated[k] for k in set(cExtrasBeingNarrated) - set(cExtras) }
     else:
-        cMethods = [a for a in cMembers if callable(getattr(vObj, a))]
-    if bNoProperties:
-        cProperties = []
+        cExtrasBeingNarrated = { k : cExtrasBeingNarrated[k] for k in set(cExtrasBeingNarrated) & set(cExtras) }
+    if bPropertiesStartFull:
+        cPropertiesBeingNarrated = [a for a in cPropertiesBeingNarrated if a not in cProperties]
     else:
-        cProperties = [a for a in cMembers if not callable(getattr(vObj, a))]
-    #---Extras
-    if bNoExtras:
-        cExtras = {}
+        cPropertiesBeingNarrated = [a for a in cPropertiesBeingNarrated if a in cProperties]
+    if bMethodsStartFull:
+        cMethodsBeingNarrated = [a for a in cMethodsBeingNarrated if a not in cMethods]
     else:
-        cExtras = {"Type":str(type(vObj))}
-    #------Exclusion
-    cMethods = [a for a in cMethods if a not in cExcludeMethods]
-    cProperties = [a for a in cProperties if a not in cExcludeProperties]
-    cExtras = { k : cExtras[k] for k in set(cExtras) - set(cExcludeExtras) }
+        cMethodsBeingNarrated = [a for a in cMethodsBeingNarrated if a in cMethods]
     #------Narration
     sReturning = ""
-    for vKey,vValue in cExtras.items():
+    for vKey,vValue in cExtrasBeingNarrated.items():
         sReturning += __NL() + vKey + ":" + vValue
-    for sProperty in cProperties:
+    for sProperty in cPropertiesBeingNarrated:
         sReturning += __NL() + sProperty + ":" + Narrate(getattr(vObj, sProperty))
-    for sMethod in cMethods:
+    for sMethod in cMethodsBeingNarrated:
         sReturning += __NL() + "Method:" + sMethod
     #---small fixes
     if sReturning == "":
