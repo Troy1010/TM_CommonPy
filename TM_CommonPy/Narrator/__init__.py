@@ -34,50 +34,40 @@ def __IsIterable(vVar):
 #------Public
 
 #dev
-def Narrate(vVar, bMultiLine = True):
+def Narrate(vVar, bMultiLine = True, iRecursionLvl = 5):
     #------Handle Recursion
-    __self.iRecursionLvl += 1
-    if __self.iRecursionLvl > iRecursionThreshold:
+    if iRecursionLvl < 0:
         if not bSentRecursionMsg:
             bSentRecursionMsg = True
-            __self.iRecursionLvl -= 1
             return "<ReachedRecursionThreshold>"
         else:
-            __self.iRecursionLvl -= 1
             return ""
     else:
         bSentRecursionMsg = False
+    iRecursionLvl -= 1
     #------Pass to correct Narrate command
     #---If it's a simple variable, return it as a string.
     if isinstance(vVar,(str,numbers.Number)):   #This also captures bools.
-        __self.iRecursionLvl -= 1
         return str(vVar)
     #---None
     if vVar is None:
-        __self.iRecursionLvl -= 1
         return "<None>"
     #---Known Objects
     #-etree Element
     if isinstance(vVar,xml.etree.ElementTree.Element):
-        sReturning = NarrateElem(vVar)
-        __self.iRecursionLvl -= 1
-        return sReturning
+        return NarrateElem(vVar,iRecursionLvl=iRecursionLvl)
     #---Collection
     if isinstance(vVar,(dict,list,tuple)):
-        sReturning = NarrateCollection(vVar,bMultiLine)
-        __self.iRecursionLvl -= 1
-        return sReturning
+        return NarrateCollection(vVar,bMultiLine,iRecursionLvl=iRecursionLvl)
     #---Everything else
-    sReturning = NarrateObject(vVar)
-    __self.iRecursionLvl -= 1
-    return sReturning
+    return NarrateObject(vVar,iRecursionLvl=iRecursionLvl)
 
 #cMembers are exclusionary if they start full, inclusionary if they start empty.
-def NarrateObject(vObj, bIncludePrivate=False, cMembers=[], bStartFull=True):
-    return NarrateObject_Options(vObj, bIncludePrivate, cMembers, cMembers, cMembers, bStartFull, bStartFull, bStartFull)
+def NarrateObject(vObj, bIncludePrivate=False, cMembers=[], bStartFull=True, iRecursionLvl = 5):
+    return NarrateObject_Options(vObj, bIncludePrivate, cMembers, cMembers, cMembers, bStartFull, bStartFull, bStartFull, iRecursionLvl=iRecursionLvl)
 
 #cMethods, cProperties, cExtras are exclusionary if they start full, inclusionary if they start empty.
-def NarrateObject_Options(vObj, bIncludePrivate = False, cMethods = [], cProperties = [], cExtras = [], bMethodsStartFull = True, bPropertiesStartFull = True, bExtrasStartFull = True):
+def NarrateObject_Options(vObj, bIncludePrivate = False, cMethods = [], cProperties = [], cExtras = [], bMethodsStartFull = True, bPropertiesStartFull = True, bExtrasStartFull = True, iRecursionLvl = 5):
     #------Reflection
     #---Reflect the object's members
     if not bIncludePrivate:
@@ -106,7 +96,7 @@ def NarrateObject_Options(vObj, bIncludePrivate = False, cMethods = [], cPropert
     for vKey,vValue in cExtrasBeingNarrated.items():
         sReturning += __NL() + vKey + ":" + vValue
     for sProperty in cPropertiesBeingNarrated:
-        sReturning += __NL() + sProperty + ":" + Narrate(getattr(vObj, sProperty))
+        sReturning += __NL() + sProperty + ":" + Narrate(getattr(vObj, sProperty), iRecursionLvl=iRecursionLvl)
     for sMethod in cMethodsBeingNarrated:
         sReturning += __NL() + "Method:" + sMethod
     #---small fixes
@@ -117,14 +107,14 @@ def NarrateObject_Options(vObj, bIncludePrivate = False, cMethods = [], cPropert
     return sReturning
 
 #Warning, this function may hang
-def NarrateUnknown(vVar, cAttributes = None):
+def NarrateUnknown(vVar, cAttributes = None, iRecursionLvl = 5):
     sReturning = "*Type:" + str(type(vVar))
     if hasattr(vVar,'Name'):
         sReturning += __NL() + "Name:"+vVar.Name
     try:
         for sAttrib in cAttributes:
             try:
-                sReturning += __NL() + sAttrib + ":" + Narrate(getattr(vVar,sAttrib))
+                sReturning += __NL() + sAttrib + ":" + Narrate(getattr(vVar,sAttrib), iRecursionLvl=iRecursionLvl)
             except:
                 pass
     except:
@@ -133,27 +123,27 @@ def NarrateUnknown(vVar, cAttributes = None):
         sReturning += __NL() + "children.."
         __self.iIndent += 1
         for vChild in vVar:
-            sReturning += __NL() + Narrate(vChild)
+            sReturning += __NL() + Narrate(vChild, iRecursionLvl=iRecursionLvl)
         __self.iIndent -= 1
     return sReturning
 
 #beta
-def NarrateElem(vElem):
+def NarrateElem(vElem, iRecursionLvl = 5):
     sReturning = "*Tag:   \t"+str(vElem.tag)
     if not (vElem.text is None or vElem.text.isspace()):
         sReturning += __NL()+"text:  \t"+str(vElem.text).replace("\n","\\n")
     if not TMC.IsEmpty(vElem.attrib):
-        sReturning += __NL()+"attrib:\t"+NarrateCollection(vElem.attrib, False)
+        sReturning += __NL()+"attrib:\t"+NarrateCollection(vElem.attrib, bMultiLine=False, iRecursionLvl=iRecursionLvl)
     if len(list(vElem)) !=0:
         sReturning += __NL()+"children.."
         __self.iIndent += 1
         for vChild in vElem:
-            sReturning += __NL() + NarrateElem(vChild)
+            sReturning += __NL() + NarrateElem(vChild, iRecursionLvl=iRecursionLvl)
         __self.iIndent -= 1
     return sReturning
 
 #beta
-def NarrateCollection(cCollection,bMultiLine = True):
+def NarrateCollection(cCollection,bMultiLine = True, iRecursionLvl = 5):
     #------Convert to 2xiter collection
     #---Dict
     if isinstance(cCollection,dict):
@@ -181,7 +171,7 @@ def NarrateCollection(cCollection,bMultiLine = True):
         __self.iIndent += 1
         for vKey,vValue in cCollection:
             sReturning += __NL() + str(vKey) + ":"
-            sReturning += Narrate(vValue)
+            sReturning += Narrate(vValue, iRecursionLvl=iRecursionLvl)
         __self.iIndent -= 1
         return sReturning
     else:
@@ -193,6 +183,6 @@ def NarrateCollection(cCollection,bMultiLine = True):
             else:
                 sReturning += " , "
             sReturning += str(vKey)
-            sReturning += ":" + Narrate(vValue)
+            sReturning += ":" + Narrate(vValue, iRecursionLvl=iRecursionLvl)
         sReturning += "}"
         return sReturning
