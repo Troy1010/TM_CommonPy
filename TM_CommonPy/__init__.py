@@ -26,10 +26,12 @@ def GetXMLNamespaces(sXMLFile):
     ])
     return cNamespaces
 
-def Copy(src,root_dst_dir):
-    if os.path.isdir(src):
-        for src_dir, dirs, files in os.walk(src):
-            dst_dir = src_dir.replace(src, root_dst_dir, 1)
+def Copy(sSrcDir,sDstDir,bPreDelete=False):
+    if bPreDelete:
+        TryDeleteFolder(sDstDir)
+    if os.path.isdir(sSrcDir):
+        for src_dir, dirs, files in os.walk(sSrcDir):
+            dst_dir = src_dir.replace(sSrcDir, sDstDir, 1)
             if not os.path.exists(dst_dir):
                 os.makedirs(dst_dir)
             for file_ in files:
@@ -38,11 +40,11 @@ def Copy(src,root_dst_dir):
                 if os.path.exists(dst_file):
                     os.remove(dst_file)
                 shutil.copy(src_file, dst_dir)
-    elif os.path.isfile(src):
-        dst_dir = src_dir.replace(src, root_dst_dir, 1)
-        shutil.copy(src, dst_dir)
+    elif os.path.isfile(sSrcDir):
+        dst_dir = src_dir.replace(sSrcDir, sDstDir, 1)
+        shutil.copy(sSrcDir, dst_dir)
     else:
-        print("Copy|Error|src "+src+" is not a valid file or directory")
+        print("Copy|Error|sSrcDir "+sSrcDir+" is not a valid file or directory")
 
 def GetDictCount(cDict):
     return len(cDict.values())
@@ -98,6 +100,12 @@ def RunPowerShellScript(sScriptFile):
     vProcess.communicate()
     return vProcess
 
+#dev
+def TryDeleteFolder(sFileOrDir):
+    if os.path.isdir(sFileOrDir):
+        shutil.rmtree(sFileOrDir)
+    elif os.path.exists(sFileOrDir):
+        os.remove(sFileOrDir)
 
 #dev
 def TryMakeDirs(sDir):

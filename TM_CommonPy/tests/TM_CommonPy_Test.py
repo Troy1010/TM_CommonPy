@@ -133,8 +133,13 @@ class Test_TM_CommonPy(unittest.TestCase):
         vObj = TestObj()
         print(TMC_NAR.NarrateObject(vObj))
         print("========")
-        print(TMC_NAR.NarrateObject(vObj, bInverseExtras=True))
-        self.assertTrue(False)
+        print(TMC_NAR.NarrateObject_Options(vObj, bMethodsStartFull=False, bExtrasStartFull=False))
+        #self.assertTrue(False)
+
+    def test_Copy(self):
+        os.chdir('..')
+        TMC.Copy('Examples_Backup','Examples_Copy',bPreDelete=True)
+        os.chdir('Examples_Copy')
 
     #---GetDictCount
     def test_GetDictCount_ByExample(self):
