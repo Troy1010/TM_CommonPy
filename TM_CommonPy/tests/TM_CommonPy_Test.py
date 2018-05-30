@@ -176,25 +176,8 @@ class Test_TM_CommonPy(unittest.TestCase):
         #del cDict["tre"]
         pass
 
-
-    #def test_RunPowershellScript_Try(self):
-    #    #---Open
-    #    TMC.Copy('Examples','Examples_RunPowershellScript_Try')
-    #    #---
-    #    TMC.RunPowershellScript(os.path.join(os.getcwd(),'Examples_RunPowershellScript_Try','HelloWorld.ps1'))
-    #    self.assertTrue(False)
-    #    #---Close
-    #    shutil.rmtree('Examples_NarrateElem')
-
-
-#    def test_WhatIsThisTrueFalse(self):
-#        #---Open
-#        TMC.Copy('Examples','Examples_WhatIsThisTrueFalse')
-#        #---
-#        vTree = xml.etree.ElementTree.parse(os.path.join('Examples_WhatIsThisTrueFalse','ExampleXML.xml'))
-#        for vElem in vTree.iter():
-#            print("vElem.tag:"+str(vElem.tag))
-#            print("vElem.text:"+str(vElem.text))
-#        self.assertTrue(False)
-#        #---Close
-#        shutil.rmtree('Examples_WhatIsThisTrueFalse')
+    def test_GetFileStrings(self):
+        print('start..')
+        for sFileName in os.listdir("."):
+            print("sFileName:"+sFileName)
+        #self.assertTrue(False)
