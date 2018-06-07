@@ -1,3 +1,7 @@
+#-------Settings
+bDebug = False
+#-------
+
 #In python, this file is already considered a class
 import os, sys
 import importlib
@@ -7,6 +11,7 @@ import shutil
 import TM_CommonPy as TMC
 import collections
 import numbers
+from pprint import pprint
 
 _self = sys.modules[__name__]
 iIndent = 0
@@ -14,106 +19,28 @@ sIndent = "-"
 iRecursionLvl = 0
 iRecursionThreshold = 5
 bSentRecursionMsg = False
-bDebug = False
 
-def __Indent():
-    return _self.sIndent * _self.iRecursionLvl
-
-#Indented NewLine
-def __NL():
-    return "\n" +__Indent()
-
+def __Indent(iShift=0):
+    return _self.sIndent * (_self.iRecursionLvl + iShift)
+def __NL(iShift=0):
+    return "\n" +__Indent(iShift)
 class RecursionContext:
-    class Break(Exception):
-      """Break out of the with statement"""
-
-    def __init__(self):
-        # global _self
-        # if _self.iRecursionLvl >= _self.iRecursionThreshold:
-        #     s += "  <RecursionLvlReached>"
-        # else:
-            pass
     def __enter__(self):
-        # global iRecursionLvl
-        # iRecursionLvl += 1
-        # return self.s + " bob"
-        #raise RecursionContext.Break
-        pass
-
+        global iRecursionLvl
+        iRecursionLvl += 1
     def __exit__(self, errtype, value, traceback):
-        if errtype == self.Break:
-            return True
         global iRecursionLvl
         iRecursionLvl -= 1
+def _RecursionLvlReached(iShift=0):
+    return (_self.iRecursionLvl + iShift) > _self.iRecursionThreshold
 
-    def BreakIfThresholdReached():
-        global _self
-        if _self.iRecursionLvl >= _self.iRecursionThreshold:
-            raise RecursionContext.Break
-        #    s += "  <RecursionLvlReached>"
-
-
-def test():
-    s = "hey"
-    _self.iRecursionLvl = 10
-    with RecursionContext():
-        RecursionContext.BreakIfThresholdReached()
-        print ("blah")
-        pass
-    print(s)
-
-
-#------Public
-#master
-def Print(sPrintMe):
-    print(sPrintMe)
-
-#beta
-#I didn't bump recursion lvl as param because it wouldn't affect __NL()
-def Narrate(vVar,bIncludeProtected=False,bIncludePrivate=False,bMultiLine=True,iRecursionThreshold=5,cMembers=[],bStartFull=True):
-    #------Handle Recursion
-    #Recursion should be checked before Narrate is called. This re-check is just a precaution.
-    if bDebug:
-        print("_self.iRecursionThreshold:"+str(_self.iRecursionThreshold)+" _self.iRecursionLvl:"+str(_self.iRecursionLvl))
-    _self.iRecursionThreshold = iRecursionThreshold
-    if _self.iRecursionLvl > _self.iRecursionThreshold: #If =, we're on the last lvl.
-        if not _self.bSentRecursionMsg:
-            _self.bSentRecursionMsg = True
-            if bDebug:
-                print("HitRecursionThreshold")
-            return "<ReachedRecursionThreshold>"
-        else:
-            return ""
-    _self.bSentRecursionMsg = False
-    #------Pass to another Narrate command
-    #-COM Object
-    if str(type(vVar)) == "<class 'win32com.client.CDispatch'>":
-        sReturning = Narrate_COM(vVar)
-    #---If it's a simple variable, return it as a string.
-    elif isinstance(vVar,(str,numbers.Number)):   #This also captures bools.
-        sReturning = str(vVar)
-    #---None
-    elif vVar is None:
-        sReturning = "<None>"
-    #---Known Objects
-    #-etree Element
-    elif isinstance(vVar,xml.etree.ElementTree.Element):
-        sReturning = NarrateElem(vVar)
-    #---Collection
-    elif isinstance(vVar,(dict,list,tuple)):
-        sReturning = NarrateCollection(vVar,bMultiLine)
-    #---Everything else
-    else:
-        sReturning = NarrateObject(vVar,bIncludeProtected,bIncludePrivate,cMembers,bStartFull)
-    return sReturning
-
-def Narrate_COM(vObj):
+def Narrate_COM(vObj,cCOMSearchMembers=[]):
     s = ""
     #-
     if hasattr(vObj,"Count"):
-        s += Narrate_COM_Collection(vObj)
+        s += Narrate_COM_Collection(vObj,cCOMSearchMembers=cCOMSearchMembers)
     elif hasattr(vObj,"Name"):
-        s += Narrate_COM_Object(vObj)
+        s += Narrate_COM_Object(vObj,cCOMSearchMembers=cCOMSearchMembers)
     else:
         try:
             sItem = str(vObj)
@@ -133,54 +60,54 @@ def GetValueOfPair_COMObject(vObj):
         return "<ValueError>"
 
 #dir() does not work for all members of COM objects
-def GetMembers_COM(vObj,cPossibleKeys=[]):
-    if not cPossibleKeys:
-        cPossibleKeys = ["Name"
+def GetMembers_COM(vObj,cCOMSearchMembers=[]):
+    if not cCOMSearchMembers:
+        cCOMSearchMembers = ["Name"
             ,"Object"
             ,"Collection"
             ,"ProjectItems"
             ,"Properties"]
     cMembers = {}
-    for vKey in cPossibleKeys:
+    for vKey in cCOMSearchMembers:
         if hasattr(vObj,vKey):
             vValue = getattr(vObj,vKey)
             cMembers[vKey] = vValue
     return cMembers.items()
 
-def Narrate_COM_Object(vObj,cPossibleKeys=[],iRecursionThreshold=-1):
-    if iRecursionThreshold != -1:
-        _self.iRecursionThreshold = iRecursionThreshold
+def Narrate_COM_Object(vObj,cCOMSearchMembers=[]):
     s = "Object_COM.."
     #---
-    if _self.iRecursionLvl >= _self.iRecursionThreshold:
+    if _RecursionLvlReached():
         s += "  <RecursionLvlReached>"
     else:
-        with RecursionContext():
-            for vKey,vValue in GetMembers_COM(vObj,cPossibleKeys):
-                s += __NL() + vKey + ":" + Narrate(vValue,iRecursionThreshold=_self.iRecursionThreshold)
+        for vKey,vValue in GetMembers_COM(vObj,cCOMSearchMembers):
+            s += __NL() + vKey + ":" + _Narrate2(vValue,cCOMSearchMembers=cCOMSearchMembers)
     return s
 
 
-def Narrate_COM_Collection(cCollection):
+def Narrate_COM_Collection(cCollection,cCOMSearchMembers=[]):
     s = "Collection_COM.."
-    #---Determine bColHasKeys
+    ##region Determine bColHasKeys
+    #Checking for Value is tricky because hasattr will throw an error for depreciated objects
     bColHasKeys = False
     for i in range(cCollection.Count):
-        if not hasattr(cCollection[i],"Name"):
-            break
+        try:
+            if not hasattr(cCollection[i],"Value"):
+                break
+        except:
+            pass
     else: #If for loop never hit break.
         bColHasKeys = True
-    #---
-    if _self.iRecursionLvl >= _self.iRecursionThreshold:
+    ##endregion
+    if _RecursionLvlReached():
         s += "  <RecursionLvlReached>"
     else:
-        with RecursionContext():
-            if bColHasKeys:
-                for i in range(cCollection.Count):
-                    s += __NL() + str(cCollection[i].Name) + ":" + Narrate(GetValueOfPair_COMObject(cCollection[i]),iRecursionThreshold=_self.iRecursionThreshold)
-            else:
-                for i in range(cCollection.Count):
-                    s += __NL() + str(i)+":"+Narrate(cCollection[i],iRecursionThreshold=_self.iRecursionThreshold)
+        if bColHasKeys:
+            for i in range(cCollection.Count):
+                s += __NL() + str(cCollection[i].Name) + ":" + _Narrate2(GetValueOfPair_COMObject(cCollection[i]),cCOMSearchMembers=cCOMSearchMembers)
+        else:
+            for i in range(cCollection.Count):
+                s += __NL() + str(i)+":"+_Narrate2(cCollection[i],cCOMSearchMembers=cCOMSearchMembers)
     return s
 
 
@@ -221,16 +148,15 @@ def NarrateObject_Options(vObj,bIncludeProtected=False,bIncludePrivate=False, cM
     else:
         cMethodsBeingNarrated = [a for a in cMethodsBeingNarrated if a in cMethods]
     #------Narration
-    if _self.iRecursionLvl >= _self.iRecursionThreshold:
-        sReturning += "  <RecursionLvlReached>"
+    if _RecursionLvlReached():
+        s += "  <RecursionLvlReached>"
     else:
-        with RecursionContext():
-            for vKey,vValue in cExtrasBeingNarrated.items():
-                sReturning += __NL() + vKey + ":" + vValue
-            for sProperty in cPropertiesBeingNarrated:
-                sReturning += __NL() + sProperty + ":" + Narrate(getattr(vObj, sProperty),iRecursionThreshold=_self.iRecursionThreshold)
-            for sMethod in cMethodsBeingNarrated:
-                sReturning += __NL() + sMethod + ":" + "Method"
+        for vKey,vValue in cExtrasBeingNarrated.items():
+            sReturning += __NL() + vKey + ":" + vValue
+        for sProperty in cPropertiesBeingNarrated:
+            sReturning += __NL() + sProperty + ":" + _Narrate2(getattr(vObj, sProperty))
+        for sMethod in cMethodsBeingNarrated:
+            sReturning += __NL() + sMethod + ":" + "Method"
     #---small fixes
     if sReturning == "":
         sReturning += "<Object>"
@@ -247,12 +173,11 @@ def NarrateElem(vElem):
         sReturning += __NL()+"attrib:\t"+NarrateCollection(vElem.attrib, bMultiLine=False)
     if len(list(vElem)) !=0:
         sReturning += __NL()+"children.."
-        if _self.iRecursionLvl >= _self.iRecursionThreshold:
-            sReturning += "  <RecursionLvlReached>"
+        if _RecursionLvlReached():
+            s += "  <RecursionLvlReached>"
         else:
-            with RecursionContext():
-                for vChild in vElem:
-                    sReturning += __NL() + NarrateElem(vChild)
+            for vChild in vElem:
+                sReturning += __NL() + NarrateElem(vChild)
     return sReturning
 
 #beta
@@ -281,27 +206,71 @@ def NarrateCollection(cCollection,bMultiLine = True):
     #------Narrate the collection.
     if bMultiLine:
         sReturning = "Collection.."
-        if _self.iRecursionLvl >= _self.iRecursionThreshold:
-            sReturning += "  <RecursionLvlReached>"
+        if _RecursionLvlReached():
+            s += "  <RecursionLvlReached>"
         else:
-            with RecursionContext():
-                for vKey,vValue in cCollection:
-                    sReturning += __NL() + str(vKey) + ":"
-                    sReturning += Narrate(vValue,iRecursionThreshold=_self.iRecursionThreshold)
+            for vKey,vValue in cCollection:
+                sReturning += __NL() + str(vKey) + ":" + _Narrate2(vValue)
         return sReturning
     else:
         sReturning = "{"
         bDoOnce = False
-        if _self.iRecursionLvl >= _self.iRecursionThreshold:
-            sReturning += "  <RecursionLvlReached>"
+        if _RecursionLvlReached():
+            s += "  <RecursionLvlReached>"
         else:
-            with RecursionContext():
-                for vKey,vValue in cCollection:
-                    if not bDoOnce:
-                        bDoOnce = True
-                    else:
-                        sReturning += " , "
-                    sReturning += str(vKey)
-                    sReturning += ":" + Narrate(vValue,iRecursionThreshold=_self.iRecursionThreshold)
+            for vKey,vValue in cCollection:
+                if not bDoOnce:
+                    bDoOnce = True
+                else:
+                    sReturning += " , "
+                sReturning += str(vKey) + ":" + _Narrate2(vValue)
         sReturning += "}"
+        return sReturning
+
+
+#In-house defaults
+def _Narrate2(vVar,iRecursionThreshold=12345,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[]):
+    iRecursionThreshold=_self.iRecursionThreshold   #_self.iRecursionThreshold cannot be used as default value
+    return Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers)
+
+
+#------Public
+#release
+def Print(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[]):
+    print(Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers))
+
+#beta
+def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[]):
+    ##region CheckRecurion
+    _self.iRecursionThreshold = iRecursionThreshold
+    #Recursion should be checked before Narrate is re-called. This re-check is just a precaution.
+    if _RecursionLvlReached():
+        if not _self.bSentRecursionMsg:
+            _self.bSentRecursionMsg = True
+            return "<ReachedRecursionThreshold 2>"
+        else:
+            return ""
+    _self.bSentRecursionMsg = False
+    ##endregion
+    with RecursionContext():
+        #-------Pass to another Narrate command
+        #-COM Object
+        if str(type(vVar)) == "<class 'win32com.client.CDispatch'>":
+            sReturning = Narrate_COM(vVar,cCOMSearchMembers)
+        #---If it's a simple variable, return it as a string.
+        elif isinstance(vVar,(str,numbers.Number)):   #This also captures bools.
+            sReturning = str(vVar)
+        #---None
+        elif vVar is None:
+            sReturning = "<None>"
+        #---Known Objects
+        #-etree Element
+        elif isinstance(vVar,xml.etree.ElementTree.Element):
+            sReturning = NarrateElem(vVar)
+        #---Collection
+        elif isinstance(vVar,(dict,list,tuple)):
+            sReturning = NarrateCollection(vVar,bMultiLine)
+        #---Everything else
+        else:
+            sReturning = NarrateObject(vVar,bIncludeProtected,bIncludePrivate,cMembers,bStartFull)
         return sReturning
