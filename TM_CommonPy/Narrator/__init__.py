@@ -1,5 +1,6 @@
 #-------Settings
 bDebug = False
+sIndent = "-"
 #-------
 
 #In python, this file is already considered a class
@@ -15,15 +16,30 @@ from pprint import pprint
 
 _self = sys.modules[__name__]
 iIndent = 0
-sIndent = "-"
 iRecursionLvl = 0
 iRecursionThreshold = 5
 bSentRecursionMsg = False
+cDuplicationGuardSet = None
 
 def __Indent(iShift=0):
     return _self.sIndent * (_self.iRecursionLvl + iShift)
 def __NL(iShift=0):
     return "\n" +__Indent(iShift)
+class DuplicationGuardContext:
+    def __init__(self,vVar):
+        global cDuplicationGuardSet
+        if cDuplicationGuardSet is None:
+            self.bCleanupDuplicationGuardSet = True
+            cDuplicationGuardSet = []
+        cDuplicationGuardSet.append(vVar)
+    def __exit__(self, errtype, value, traceback):
+        global cDuplicationGuardSet
+        if self.bCleanupDuplicationGuardSet:
+            cDuplicationGuardSet = None
+
+
+
+
 class RecursionContext:
     def __enter__(self):
         global iRecursionLvl
@@ -66,7 +82,9 @@ def GetMembers_COM(vObj,cCOMSearchMembers=[]):
             ,"Object"
             ,"Collection"
             ,"ProjectItems"
-            ,"Properties"]
+            ,"Properties"
+            ,"Files"
+            ,"Filters"]
     cMembers = {}
     for vKey in cCOMSearchMembers:
         if hasattr(vObj,vKey):
@@ -75,7 +93,10 @@ def GetMembers_COM(vObj,cCOMSearchMembers=[]):
     return cMembers.items()
 
 def Narrate_COM_Object(vObj,cCOMSearchMembers=[]):
-    s = "Object_COM.."
+    if hasattr(vObj,"Name"):
+        s = "(Object_COM)"+vObj.Name+".."
+    else:
+        s = "Object_COM.."
     #---
     if _RecursionLvlReached():
         s += "  <RecursionLvlReached>"
@@ -86,7 +107,7 @@ def Narrate_COM_Object(vObj,cCOMSearchMembers=[]):
 
 
 def Narrate_COM_Collection(cCollection,cCOMSearchMembers=[]):
-    s = "Collection_COM.."
+    s = "Collection_COM..    Count:"+str(cCollection.Count)
     ##region Determine bColHasKeys
     #Checking for Value is tricky because hasattr will throw an error for depreciated objects
     bColHasKeys = False
@@ -102,12 +123,15 @@ def Narrate_COM_Collection(cCollection,cCOMSearchMembers=[]):
     if _RecursionLvlReached():
         s += "  <RecursionLvlReached>"
     else:
-        if bColHasKeys:
-            for i in range(cCollection.Count):
-                s += __NL() + str(cCollection[i].Name) + ":" + _Narrate2(GetValueOfPair_COMObject(cCollection[i]),cCOMSearchMembers=cCOMSearchMembers)
-        else:
-            for i in range(cCollection.Count):
-                s += __NL() + str(i)+":"+_Narrate2(cCollection[i],cCOMSearchMembers=cCOMSearchMembers)
+        try:
+            if bColHasKeys:
+                for i in range(cCollection.Count):
+                    s += __NL() + str(cCollection[i].Name) + ":" + _Narrate2(GetValueOfPair_COMObject(cCollection[i]),cCOMSearchMembers=cCOMSearchMembers)
+            else:
+                for i in range(cCollection.Count):
+                    s += __NL() + str(i)+":"+_Narrate2(cCollection[i],cCOMSearchMembers=cCOMSearchMembers)
+        except:
+            s += "  <ExceptionRaised>"
     return s
 
 
@@ -252,7 +276,7 @@ def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,b
             return ""
     _self.bSentRecursionMsg = False
     ##endregion
-    with RecursionContext():
+    with RecursionContext(), DuplicationGuardContext(vVar):
         #-------Pass to another Narrate command
         #-COM Object
         if str(type(vVar)) == "<class 'win32com.client.CDispatch'>":
