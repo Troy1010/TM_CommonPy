@@ -1,3 +1,7 @@
+##region Settings
+bPostDelete = False
+##endregion
+
 import unittest
 from nose.tools import *
 import os
@@ -6,7 +10,8 @@ import sys
 import xml.etree.ElementTree
 
 import TM_CommonPy as TM
-import TM_CommonPy.Narrator as TM_NAR
+import VisualStudioAutomation as VS
+#import TM_CommonPy.Narrator as TM.Narrator
 
 #legacy
 def __Copy(src,root_dst_dir):
@@ -27,8 +32,8 @@ def __Copy(src,root_dst_dir):
     else:
         print("__Copy\\Error\\src is not a valid file or directory")
 
-class TestObj():
-    Name = "TestObject"
+class Te5tObj():
+    Name = "Te5tObject"
 
     def Method(self):
         print("Hiii I'm the Test Object")
@@ -36,51 +41,48 @@ class TestObj():
     def TypeMethod(self):
         print("Hiii I'm the Test Object")
 
-class Test_TM_CommonPy(unittest.TestCase):
+class Test_TM_CommonPy_SameFolder(unittest.TestCase):
+    sTestWorkspace = "TestWorkspace_SameFolder/"
     @classmethod
     def setUpClass(self):
         os.chdir(os.path.join('TM_CommonPy','tests'))
-        TM.Copy('Examples_Backup','Examples_Shared')
-        os.chdir('Examples_Shared')
+        TM.Copy("res/Examples_Backup",self.sTestWorkspace,bPreDelete=True)
+        self.OldCWD = os.getcwd()
+        os.chdir(self.sTestWorkspace)
 
     @classmethod
     def tearDownClass(self):
-        os.chdir('..')
-        shutil.rmtree('Examples_Shared')
+        os.chdir(self.OldCWD)
+        global bPostDelete
+        if bPostDelete:
+            TM.Delete(self.sTestWorkspace)
         os.chdir(os.path.join('..','..'))
 
-    def setUp(self):
-        self.sExampleXMLFile = 'ExampleXML.xml'
-        self.sExampleXML_HasBOM = 'ExampleXML_HasBOM.xml'
-        self.sExampleTXTFile = 'ExampleTXT.txt'
-        pass
-
-    def tearDown(self):
-        pass
-
     #------Tests
+
+
 
     def test_GetScriptRoot_IsString(self):
         s = TM.GetScriptRoot()
         self.assertTrue(isinstance(s, str))
 
     def test_GetFileContent_IsString(self):
-        s = TM.GetFileContent(self.sExampleXMLFile)
+        s = TM.GetFileContent('ExampleXML.xml')
         self.assertTrue(isinstance(s, str))
 
     def test_GetFileContent_ByExample(self):
-        self.assertEqual(TM.GetFileContent(self.sExampleTXTFile),"I am example txt.\nHear me. Or, read me, rather.")
+        self.assertEqual(TM.GetFileContent('ExampleTXT.txt'),"I am example txt.\nHear me. Or, read me, rather.")
 
     def test_GetFileContent_ByExample2(self):
-        b = TM.GetFileContent(self.sExampleTXTFile) == "tyurityihghty"
+        b = TM.GetFileContent('ExampleTXT.txt') == "tyurityihghty"
         self.assertTrue(not b)
 
     def test_GetXMLNamespaces_ByExample(self):
-        b = str(TM.GetXMLNamespaces(self.sExampleXMLFile)) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
+        b = str(TM.GetXMLNamespaces('ExampleXML.xml')) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
         self.assertTrue(b)
 
     def test_GetXMLNamespaces_ByExample_HasBOM(self):
-        b = str(TM.GetXMLNamespaces(self.sExampleXML_HasBOM)) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
+        b = str(TM.GetXMLNamespaces('ExampleXML_HasBOM.xml')) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
         self.assertTrue(b)
 
     def test_FindElem(self):
@@ -99,33 +101,33 @@ class Test_TM_CommonPy(unittest.TestCase):
     def test_Narrate_Elem(self):
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
-        print(TM_NAR.Narrate(vRoot))
+        print(TM.Narrator.Narrate(vRoot))
         #self.assertTrue(False)
 
     def test_Narrate_Collection(self):
         cArray = [30,40,80,10]
-        print(TM_NAR.Narrate(cArray))
+        print(TM.Narrator.Narrate(cArray))
         #self.assertTrue(False)
 
     def test_Narrate_Bool(self):
-        print(TM_NAR.Narrate(True))
-        print(TM_NAR.Narrate(False))
+        print(TM.Narrator.Narrate(True))
+        print(TM.Narrator.Narrate(False))
         #self.assertTrue(False)
 
     def test_Narrate_None(self):
-        print(TM_NAR.Narrate(None))
+        print(TM.Narrator.Narrate(None))
         #self.assertTrue(False)
 
     def test_Narrate_UnknownObj(self):
-        vObj = TestObj()
-        print(TM_NAR.Narrate(vObj))
+        vObj = Te5tObj()
+        print(TM.Narrator.Narrate(vObj))
         #self.assertTrue(False)
 
     def test_Narrate_Object2(self):
-        vObj = TestObj()
-        print(TM_NAR.NarrateObject(vObj))
+        vObj = Te5tObj()
+        print(TM.Narrator.NarrateObject(vObj))
         print("========")
-        print(TM_NAR.NarrateObject_Options(vObj, bMethodsStartFull=False, bExtrasStartFull=False))
+        print(TM.Narrator.NarrateObject_Options(vObj, bMethodsStartFull=False, bExtrasStartFull=False))
         #self.assertTrue(False)
 
     #---GetDictCount
@@ -169,46 +171,113 @@ class Test_TM_CommonPy(unittest.TestCase):
         print(TM.ListFiles("."))
 #        self.assertTrue(False)
 
-class Test_TM_CommonPy_CopyExamples(unittest.TestCase):
-    bDontDelete=False
+    def test_IsCollection(self):
+        self.assertTrue(TM.IsCollection(["beep","boop"]))
+        self.assertFalse(TM.IsCollection("beep"))
 
+class Test_TM_CommonPy(unittest.TestCase):
+    sTestWorkspace = "TestWorkspace/"
     @classmethod
     def setUpClass(self):
         os.chdir(os.path.join('TM_CommonPy','tests'))
+        TM.Delete(self.sTestWorkspace)
 
     @classmethod
     def tearDownClass(self):
         os.chdir(os.path.join('..','..'))
-
-    def setUp(self):
-        self.sExampleXMLFile = 'ExampleXML.xml'
-        self.sExampleXML_HasBOM = 'ExampleXML_HasBOM.xml'
-        self.sExampleTXTFile = 'ExampleTXT.txt'
-        self.sCurrentResFolder = 'Examples__'+self.id()[self.id().rfind("test_")+5:]
-        TM.Copy('Examples_Backup',self.sCurrentResFolder, bPreDelete = True)
-        os.chdir(self.sCurrentResFolder)
-
-    def tearDown(self):
-        os.chdir('..')
-        if not self.bDontDelete:
-            TM.Delete(self.sCurrentResFolder)
-        else:
-            self.bDontDelete = False
+        global bPostDelete
+        if bPostDelete:
+            TM.Delete(self.sTestWorkspace)
 
     #------Tests
-
     def test_RunPowershellScript_Try(self):
-        print(os.path.join(os.getcwd(),'HelloWorld.ps1'))
-        TM.RunPowerShellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
-        #TM.RunPowershellScript('HelloWorld.ps1')
-        #self.assertTrue(False)
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            TM.RunPowerShellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
 
     def test_Run(self):
-        TM.Run("git clone -b beta https://github.com/Troy1010/TM_CommonCPP.git")
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            TM.Run("git clone -b beta https://github.com/Troy1010/TM_CommonCPP.git")
 
     def test_GitPullOrClone(self):
-        TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git")
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git")
 
     def test_CopyExclude(self):
-        TM.Copy("Folder2","FolderCopied",sExclude="XML")
-        #self.bDontDelete = True
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            TM.Copy("Folder2","FolderCopied",sExclude="XML")
+
+    def test_CommandSet(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            #-Pre-checking just to be sure test is set up correctly
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            vCommandSet = TM.CommandSet()
+            vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+            vCommandSet.Execute()
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
+
+    def test_CommandSet2(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            vCommandSet = TM.CommandSet()
+            vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+            vCommandSet.Execute()
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            vCommandSet.Execute()
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
+
+    def test_CommandSet3(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            #---Open
+            TM.Copy("HelloWorld.vcxproj","HelloWorld_Clean.vcxproj")
+            #---
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            vCommandSet = TM.CommandSet()
+            vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+            vCommandSet.Execute()
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            TM.Copy("HelloWorld_Clean.vcxproj","HelloWorld.vcxproj")
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+            vCommandSet.Execute()
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+            vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+            vCommandSet.Execute(bRedo=True)
+            #-Test
+            with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
+                self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
+            #-
+
+    def test_CommandSet_ValueError(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            vCommandSet = TM.CommandSet()
+            with self.assertRaises(ValueError):
+                vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+
+    def test_CommandSet_SingleArg(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            vCommandSet = TM.CommandSet()
+            vCommandSet.Que([TM.IsCollection,TM.IsCollection],"Project.vcxproj")
+            vCommandSet.Execute()

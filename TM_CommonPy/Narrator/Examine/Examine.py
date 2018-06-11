@@ -11,5 +11,8 @@ import VisualStudioAutomation.DTEUser
 import VisualStudioAutomation.Narrator as VS_Nar
 
 
+vVar = "bob"
+cCol = None
 
-TM_Nar.test()
+if vVar in cCol:
+    print("beep")

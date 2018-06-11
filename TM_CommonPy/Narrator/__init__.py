@@ -20,6 +20,7 @@ iRecursionLvl = 0
 iRecursionThreshold = 5
 bSentRecursionMsg = False
 cDuplicationGuardSet = None
+bHideDuplications = False
 
 def __Indent(iShift=0):
     return _self.sIndent * (_self.iRecursionLvl + iShift)
@@ -27,19 +28,38 @@ def __NL(iShift=0):
     return "\n" +__Indent(iShift)
 class DuplicationGuardContext:
     def __init__(self,vVar):
+        self.bCleanupDuplicationGuardSet = False
         global cDuplicationGuardSet
         if cDuplicationGuardSet is None:
             self.bCleanupDuplicationGuardSet = True
             cDuplicationGuardSet = []
-        cDuplicationGuardSet.append(vVar)
+        if vVar in cDuplicationGuardSet:
+            self.bPass = False
+        else:
+            #Since python currently can't group-type without without duck-typing, this is what it is.
+            if str(type(vVar)) == "<class 'win32com.client.CDispatch'>":
+                bAdd = True
+            elif isinstance(vVar,(str,numbers.Number)):   #This also captures bools.
+                bAdd = False
+            elif vVar is None:
+                bAdd = False
+            elif isinstance(vVar,xml.etree.ElementTree.Element):
+                bAdd = False
+            elif isinstance(vVar,(dict,list,tuple)):
+                bAdd = True
+            else:
+                bAdd = True
+            if bAdd:
+                cDuplicationGuardSet.append(vVar)
+            self.bPass = True
+    def __enter__(self):
+        return self.bPass
     def __exit__(self, errtype, value, traceback):
         global cDuplicationGuardSet
         if self.bCleanupDuplicationGuardSet:
             cDuplicationGuardSet = None
-
-
-
-
+    def IsDuplication(vVar):
+        return (not cDuplicationGuardSet is None) and (vVar in cDuplicationGuardSet)
 class RecursionContext:
     def __enter__(self):
         global iRecursionLvl
@@ -47,8 +67,8 @@ class RecursionContext:
     def __exit__(self, errtype, value, traceback):
         global iRecursionLvl
         iRecursionLvl -= 1
-def _RecursionLvlReached(iShift=0):
-    return (_self.iRecursionLvl + iShift) > _self.iRecursionThreshold
+    def IsThresholdMet(iShift=0):
+        return (_self.iRecursionLvl + iShift) > _self.iRecursionThreshold
 
 def Narrate_COM(vObj,cCOMSearchMembers=[]):
     s = ""
@@ -58,11 +78,10 @@ def Narrate_COM(vObj,cCOMSearchMembers=[]):
     elif hasattr(vObj,"Name"):
         s += Narrate_COM_Object(vObj,cCOMSearchMembers=cCOMSearchMembers)
     else:
-        try:
-            sItem = str(vObj)
-            s += sItem
-        except:
-            s += "<failureToExtract>"
+        #try:
+        s += Narrate_COM_Object(vObj,cCOMSearchMembers=cCOMSearchMembers)
+        #except:
+        #    s += "<failureToExtract>"
     return s
 
 #If you try to vObj.Value depreciated COM objects, an error is thrown.
@@ -84,30 +103,39 @@ def GetMembers_COM(vObj,cCOMSearchMembers=[]):
             ,"ProjectItems"
             ,"Properties"
             ,"Files"
-            ,"Filters"]
+            ,"Filters"
+            ,"ConfigurationManager"]
     cMembers = {}
     for vKey in cCOMSearchMembers:
-        if hasattr(vObj,vKey):
+        try:
             vValue = getattr(vObj,vKey)
             cMembers[vKey] = vValue
+        except:
+            cMembers[vKey] = "<failureToExtract>"
     return cMembers.items()
 
 def Narrate_COM_Object(vObj,cCOMSearchMembers=[]):
     if hasattr(vObj,"Name"):
         s = "(Object_COM)"+vObj.Name+".."
     else:
-        s = "Object_COM.."
+        try:
+            s = "(Object_COM)"+str(vObj)+".."
+        except:
+            s = "Object_COM.."
     #---
-    if _RecursionLvlReached():
+    if RecursionContext.IsThresholdMet():
         s += "  <RecursionLvlReached>"
     else:
         for vKey,vValue in GetMembers_COM(vObj,cCOMSearchMembers):
+            ##region DuplicationGuardContext
+            if DuplicationGuardContext.IsDuplication(vValue) and bHideDuplications:
+                continue
+            ##endregion
             s += __NL() + vKey + ":" + _Narrate2(vValue,cCOMSearchMembers=cCOMSearchMembers)
     return s
 
 
 def Narrate_COM_Collection(cCollection,cCOMSearchMembers=[]):
-    s = "Collection_COM..    Count:"+str(cCollection.Count)
     ##region Determine bColHasKeys
     #Checking for Value is tricky because hasattr will throw an error for depreciated objects
     bColHasKeys = False
@@ -120,15 +148,24 @@ def Narrate_COM_Collection(cCollection,cCOMSearchMembers=[]):
     else: #If for loop never hit break.
         bColHasKeys = True
     ##endregion
-    if _RecursionLvlReached():
+    s = "Collection_COM..    Count:"+str(cCollection.Count)
+    if RecursionContext.IsThresholdMet():
         s += "  <RecursionLvlReached>"
     else:
         try:
             if bColHasKeys:
                 for i in range(cCollection.Count):
+                    ##region DuplicationGuardContext
+                    if DuplicationGuardContext.IsDuplication(GetValueOfPair_COMObject(cCollection[i])) and bHideDuplications:
+                        continue
+                    ##endregion
                     s += __NL() + str(cCollection[i].Name) + ":" + _Narrate2(GetValueOfPair_COMObject(cCollection[i]),cCOMSearchMembers=cCOMSearchMembers)
             else:
                 for i in range(cCollection.Count):
+                    ##region DuplicationGuardContext
+                    if DuplicationGuardContext.IsDuplication(cCollection[i]) and bHideDuplications:
+                        continue
+                    ##endregion
                     s += __NL() + str(i)+":"+_Narrate2(cCollection[i],cCOMSearchMembers=cCOMSearchMembers)
         except:
             s += "  <ExceptionRaised>"
@@ -172,7 +209,7 @@ def NarrateObject_Options(vObj,bIncludeProtected=False,bIncludePrivate=False, cM
     else:
         cMethodsBeingNarrated = [a for a in cMethodsBeingNarrated if a in cMethods]
     #------Narration
-    if _RecursionLvlReached():
+    if RecursionContext.IsThresholdMet():
         s += "  <RecursionLvlReached>"
     else:
         for vKey,vValue in cExtrasBeingNarrated.items():
@@ -197,7 +234,7 @@ def NarrateElem(vElem):
         sReturning += __NL()+"attrib:\t"+NarrateCollection(vElem.attrib, bMultiLine=False)
     if len(list(vElem)) !=0:
         sReturning += __NL()+"children.."
-        if _RecursionLvlReached():
+        if RecursionContext.IsThresholdMet():
             s += "  <RecursionLvlReached>"
         else:
             for vChild in vElem:
@@ -230,7 +267,7 @@ def NarrateCollection(cCollection,bMultiLine = True):
     #------Narrate the collection.
     if bMultiLine:
         sReturning = "Collection.."
-        if _RecursionLvlReached():
+        if RecursionContext.IsThresholdMet():
             s += "  <RecursionLvlReached>"
         else:
             for vKey,vValue in cCollection:
@@ -239,7 +276,7 @@ def NarrateCollection(cCollection,bMultiLine = True):
     else:
         sReturning = "{"
         bDoOnce = False
-        if _RecursionLvlReached():
+        if RecursionContext.IsThresholdMet():
             s += "  <RecursionLvlReached>"
         else:
             for vKey,vValue in cCollection:
@@ -253,22 +290,24 @@ def NarrateCollection(cCollection,bMultiLine = True):
 
 
 #In-house defaults
-def _Narrate2(vVar,iRecursionThreshold=12345,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[]):
+def _Narrate2(vVar,iRecursionThreshold=12345,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False):
     iRecursionThreshold=_self.iRecursionThreshold   #_self.iRecursionThreshold cannot be used as default value
-    return Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers)
+    bHideDuplications=_self.bHideDuplications
+    return Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications)
 
 
 #------Public
 #release
-def Print(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[]):
-    print(Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers))
+def Print(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False):
+    print(Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications))
 
 #beta
-def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[]):
-    ##region CheckRecurion
+def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False):
+    _self.bHideDuplications = bHideDuplications
+    ##region RecursionContext
     _self.iRecursionThreshold = iRecursionThreshold
     #Recursion should be checked before Narrate is re-called. This re-check is just a precaution.
-    if _RecursionLvlReached():
+    if RecursionContext.IsThresholdMet():
         if not _self.bSentRecursionMsg:
             _self.bSentRecursionMsg = True
             return "<ReachedRecursionThreshold 2>"
@@ -276,9 +315,13 @@ def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,b
             return ""
     _self.bSentRecursionMsg = False
     ##endregion
+    ##region DuplicationGuardContext
+    if DuplicationGuardContext.IsDuplication(vVar):
+        return "<Duplication>"
+    ##endregion
     with RecursionContext(), DuplicationGuardContext(vVar):
-        #-------Pass to another Narrate command
-        #-COM Object
+        #-------Pass to another Narrate command depending on type
+        #---COM
         if str(type(vVar)) == "<class 'win32com.client.CDispatch'>":
             sReturning = Narrate_COM(vVar,cCOMSearchMembers)
         #---If it's a simple variable, return it as a string.
@@ -287,8 +330,7 @@ def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,b
         #---None
         elif vVar is None:
             sReturning = "<None>"
-        #---Known Objects
-        #-etree Element
+        #---etree Element
         elif isinstance(vVar,xml.etree.ElementTree.Element):
             sReturning = NarrateElem(vVar)
         #---Collection
