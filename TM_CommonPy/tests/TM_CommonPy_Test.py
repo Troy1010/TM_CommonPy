@@ -1,5 +1,6 @@
 ##region Settings
 bPostDelete = False
+bWriteLog = True
 ##endregion
 
 import unittest
@@ -12,6 +13,16 @@ import xml.etree.ElementTree
 import TM_CommonPy as TM
 import VisualStudioAutomation as VS
 #import TM_CommonPy.Narrator as TM.Narrator
+
+##region LogInit
+import logging, os
+TMLog_Tests = logging.getLogger('TM_CommonPy_Tests')
+if bWriteLog:
+    sLogFile = os.path.join(__file__,'..','TMLog_Tests.log')
+    if os.path.exists(sLogFile):
+        os.remove(sLogFile)
+    TMLog_Tests.addHandler(logging.FileHandler(sLogFile))
+##endregion
 
 #legacy
 def __Copy(src,root_dst_dir):
@@ -281,3 +292,9 @@ class Test_TM_CommonPy(unittest.TestCase):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([TM.IsCollection,TM.IsCollection],"Project.vcxproj")
             vCommandSet.Execute()
+
+    def test_GetDependencyRoots(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            for sRoot in TM.Conan.GetDependencyRoots("conanbuildinfo.txt"):
+                TMLog_Tests.debug(sRoot)

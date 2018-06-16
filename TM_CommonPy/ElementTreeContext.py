@@ -13,6 +13,7 @@ import importlib.util
 import TM_CommonPy.Narrator
 import ctypes
 import TM_CommonPy as TM
+from TM_CommonPy import TMLog
 
 #beta
 class ElementTreeContext:

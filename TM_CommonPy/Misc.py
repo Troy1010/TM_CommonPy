@@ -12,6 +12,7 @@ import inspect
 import importlib.util
 import TM_CommonPy.Narrator
 import ctypes
+from TM_CommonPy import TMLog
 
 #dev
 def GetGitNameFromURL(sURL):
