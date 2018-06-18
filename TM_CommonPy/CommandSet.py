@@ -15,6 +15,37 @@ import ctypes
 import TM_CommonPy as TM
 from TM_CommonPy import TMLog
 
+##region Private
+def _GetDependencyRoots(sConanBuildInfoTxtFile):
+    bRootIsNext = False
+    with open(sConanBuildInfoTxtFile,'r') as vFile:
+        cReturning = []
+        for sLine in vFile:
+            if "[rootpath_" in sLine:
+                bRootIsNext = True
+                continue
+            if bRootIsNext:
+                bRootIsNext = False
+                cReturning.append(sLine.strip())
+    TMLog.debug("_GetDependencyRoots`cReturning:"+TM.Narrator.Narrate(cReturning))
+    return cReturning
+
+def _GetRecommendedIntegrationsPair(sRoot):
+    if os.path.isdir(os.path.join(sRoot,"RecommendedIntegration")):
+        TMLog.debug("_GetRecommendedIntegrationsPair`sRoot is dir:"+sRoot)
+        sys.path.insert(0,sRoot)
+        import RecommendedIntegration
+        if not hasattr(RecommendedIntegration,"Main"):
+            raise AttributeError("RecommendedIntegration.Main")
+        if not hasattr(RecommendedIntegration,"Main_Undo"):
+            raise AttributeError("RecommendedIntegration.Main_Undo")
+        return (RecommendedIntegration.Main,RecommendedIntegration.Main_Undo)
+    else:
+        TMLog.debug("_GetRecommendedIntegrationsPair`sRoot is NOT dir:"+sRoot)
+##endregion
+
+
+
 #beta
 class CommandSet:
     def __init__(self):
@@ -56,3 +87,8 @@ class CommandSet:
     @staticmethod
     def _Undo(cDoUndoPair,cArgs):
         cDoUndoPair[1](*cArgs)
+    def QueConanPackageRecommendedIntegrations(self,sProj,sConanBuildInfoTxtFile):
+        for sRoot in _GetDependencyRoots(sConanBuildInfoTxtFile):
+            vDoUndoPair = _GetRecommendedIntegrationsPair(sRoot)
+            if not vDoUndoPair is None:
+                self.Que(vDoUndoPair,[sProj,sRoot])

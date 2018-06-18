@@ -282,7 +282,7 @@ def NarrateCollection(cCollection,bMultiLine = True):
     if bMultiLine:
         sReturning = "Collection.."
         if RecursionContext.IsThresholdMet():
-            s += "  <RecursionLvlReached>"
+            sReturning += "  <RecursionLvlReached>"
         else:
             for vKey,vValue in cCollection:
                 sReturning += __NL() + str(vKey) + ":" + _Narrate2(vValue)

@@ -13,6 +13,10 @@ import xml.etree.ElementTree
 import TM_CommonPy as TM
 import VisualStudioAutomation as VS
 #import TM_CommonPy.Narrator as TM.Narrator
+from TM_CommonPy.CommandSet import _GetRecommendedIntegrationsPair
+from TM_CommonPy.CommandSet import _GetDependencyRoots
+import dill
+import importlib
 
 ##region LogInit
 import logging, os
@@ -296,5 +300,31 @@ class Test_TM_CommonPy(unittest.TestCase):
     def test_GetDependencyRoots(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
-            for sRoot in TM.Conan.GetDependencyRoots("conanbuildinfo.txt"):
+            for sRoot in _GetDependencyRoots("conanbuildinfo.txt"):
                 TMLog_Tests.debug(sRoot)
+
+    #This test relies on a specific environment
+    def test_QueRecommendedIntegrations(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            vCommandSet = TM.CommandSet()
+            vCommandSet.QueConanPackageRecommendedIntegrations("HelloWorld.vcxproj","conanbuildinfo.txt")
+            TMLog_Tests.debug(TM.Narrator.Narrate(vCommandSet.CommandSet))
+            vCommandSet.Execute()
+
+    def test_CopyFunction(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            sys.path.append(os.getcwd())
+            import ReturnAString
+            del sys.path[-1]
+            #importlib.import_module("HelloWorld")
+            TMLog_Tests.debug(ReturnAString.FnReturnAString())
+            #HelloWorld.HelloWorldFn()
+            # vFn = TM.CopyFunction(FunctionTwo)
+            # with open("pickle1","wb") as handle:
+            #     dill.dump(vFn,handle)
+            #
+            # with open("pickle1","rb") as handle:
+            #     vLoadedFn = dill.load(handle)
+            # dill.dump()

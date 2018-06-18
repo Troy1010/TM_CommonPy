@@ -12,6 +12,7 @@ import inspect
 import importlib.util
 import TM_CommonPy.Narrator
 import ctypes
+import types
 from TM_CommonPy import TMLog
 
 #dev
@@ -252,6 +253,11 @@ class fragile(object):
             return True
         return error
 #dev
+def ImportFromDir(sName,sDir):
+    sys.path.insert(0,sDir)
+    return importlib.import_module(sName)
+
+#dev    
 #This function allows you to import a file witout poluting sys.path
 def ImportFromDir(sName,sDir):
     sys.path.insert(0,sDir)
@@ -303,3 +309,7 @@ def ImportSubmodules(package, recursive=True):
         if recursive and is_pkg:
             results.update(ImportSubmodules(full_name))
     return results
+
+#beta
+def CopyFunction(vFunction):
+    return types.FunctionType(vFunction.__code__, vFunction.__globals__, vFunction.__name__, vFunction.__defaults__, vFunction.__closure__)
