@@ -312,19 +312,30 @@ class Test_TM_CommonPy(unittest.TestCase):
             TMLog_Tests.debug(TM.Narrator.Narrate(vCommandSet.CommandSet))
             vCommandSet.Execute()
 
+    def test_ImportFromDir(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            zzqwer = TM.ImportFromDir("ReturnAString.py")
+            TMLog_Tests.debug(zzqwer.FnReturnAString())
+
+
     def test_CopyFunction(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
-            sys.path.append(os.getcwd())
-            import ReturnAString
-            del sys.path[-1]
-            #importlib.import_module("HelloWorld")
-            TMLog_Tests.debug(ReturnAString.FnReturnAString())
-            #HelloWorld.HelloWorldFn()
-            # vFn = TM.CopyFunction(FunctionTwo)
-            # with open("pickle1","wb") as handle:
-            #     dill.dump(vFn,handle)
-            #
-            # with open("pickle1","rb") as handle:
-            #     vLoadedFn = dill.load(handle)
-            # dill.dump()
+            vFn = TM.CopyFunction(VS.IntegrateProps)
+            with open("pickle1","wb") as handle:
+                dill.dump(vFn,handle)
+            self.assertTrue(TM.IsTextInFile("vTree",'pickle1'))
+
+            with open("pickle2","wb") as handle:
+                dill.dump(VS.IntegrateProps,handle)
+            self.assertFalse(TM.IsTextInFile("vTree",'pickle2'))
+
+
+    def test_CopyFunction2(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            with open("pickleA1","rb") as handle:
+                vLoadedFn = dill.load(handle)
+            with self.assertRaises(TypeError):
+                TMLog_Tests.debug(vLoadedFn())

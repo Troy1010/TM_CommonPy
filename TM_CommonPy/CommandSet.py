@@ -14,6 +14,8 @@ import TM_CommonPy.Narrator
 import ctypes
 import TM_CommonPy as TM
 from TM_CommonPy import TMLog
+import pickle
+import dill
 
 ##region Private
 def _GetDependencyRoots(sConanBuildInfoTxtFile):
@@ -31,17 +33,19 @@ def _GetDependencyRoots(sConanBuildInfoTxtFile):
     return cReturning
 
 def _GetRecommendedIntegrationsPair(sRoot):
-    if os.path.isdir(os.path.join(sRoot,"RecommendedIntegration")):
-        TMLog.debug("_GetRecommendedIntegrationsPair`sRoot is dir:"+sRoot)
-        sys.path.insert(0,sRoot)
-        import RecommendedIntegration
+    sRecommendedIntegrationFile = os.path.join(sRoot,"RecommendedIntegration.py")
+    if os.path.isfile(sRecommendedIntegrationFile):
+        TMLog.debug(__name__+"::_GetRecommendedIntegrationsPairsRecommendedIntegrationFile is file:"+sRecommendedIntegrationFile)
+        RecommendedIntegration = TM.ImportFromDir(sRecommendedIntegrationFile)
+        # sys.path.insert(0,sRoot)
+        # import RecommendedIntegration
         if not hasattr(RecommendedIntegration,"Main"):
             raise AttributeError("RecommendedIntegration.Main")
         if not hasattr(RecommendedIntegration,"Main_Undo"):
             raise AttributeError("RecommendedIntegration.Main_Undo")
-        return (RecommendedIntegration.Main,RecommendedIntegration.Main_Undo)
+        return (TM.CopyFunction(RecommendedIntegration.Main),TM.CopyFunction(RecommendedIntegration.Main_Undo))
     else:
-        TMLog.debug("_GetRecommendedIntegrationsPair`sRoot is NOT dir:"+sRoot)
+        TMLog.debug(__name__+"::_GetRecommendedIntegrationsPair`sRecommendedIntegrationFile is NOT file:"+sRecommendedIntegrationFile)
 ##endregion
 
 
@@ -58,6 +62,7 @@ class CommandSet:
             cArgs = [cArgs]
         self.CommandSet.append([cDoUndoPair,cArgs])
     def Execute(self,bRedo=False):
+        TMLog.debug(self.__class__.__name__+"::"+TM.FnName()+"`Open")
         if bRedo:
             #---Undo what is in PreviousCommandSet
             for vItem in self.PreviousCommandSet:
@@ -81,12 +86,22 @@ class CommandSet:
         #---
         self.PreviousCommandSet = self.CommandSet
         self.CommandSet = []
+    def Save(self):
+        with open('CommandSet.pickle', 'wb') as handle:
+            dill.dump(self, handle, protocol=pickle.HIGHEST_PROTOCOL)
     @staticmethod
     def _Do(cDoUndoPair,cArgs):
         cDoUndoPair[0](*cArgs)
     @staticmethod
     def _Undo(cDoUndoPair,cArgs):
         cDoUndoPair[1](*cArgs)
+    @staticmethod
+    def TryLoad():
+        try:
+            with open('CommandSet.pickle', 'rb') as handle:
+                return dill.load(handle)
+        except FileNotFoundError:
+            return TM.CommandSet()
     def QueConanPackageRecommendedIntegrations(self,sProj,sConanBuildInfoTxtFile):
         for sRoot in _GetDependencyRoots(sConanBuildInfoTxtFile):
             vDoUndoPair = _GetRecommendedIntegrationsPair(sRoot)

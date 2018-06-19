@@ -6,21 +6,17 @@ __version__ = '0.10.0'
 #__all__ = ["CommandSet"]
 ##region LogInit
 import logging, os
-TMLog = logging.getLogger('TM_CommonPy')
-bPermissionError = False
+sLogFile = os.path.join(__file__,'..','TMLog.log')
+TMLog = logging.getLogger(__name__)
+TMLog.setLevel(logging.DEBUG)
+try:
+    os.remove(sLogFile)
+except (PermissionError,FileNotFoundError):
+    pass
 if bWriteLog:
-    sLogFile = os.path.join(__file__,'..','TMLog.log')
-    if os.path.exists(sLogFile):
-        try:
-            os.remove(sLogFile)
-        except PermissionError:
-            bPermissionError = True
     TMLog.addHandler(logging.FileHandler(sLogFile))
-    if bPermissionError:
-        TMLog.debug("Could not remove TMLog due to PermissionError")
 ##endregion
 ##region ImportThisModule
-import TM_CommonPy as TM
 from TM_CommonPy.Misc import *
 from TM_CommonPy.CommandSet import CommandSet
 from TM_CommonPy.CopyContext import CopyContext

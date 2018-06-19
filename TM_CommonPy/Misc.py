@@ -14,6 +14,7 @@ import TM_CommonPy.Narrator
 import ctypes
 import types
 from TM_CommonPy import TMLog
+import TM_CommonPy as TM
 
 #dev
 def GetGitNameFromURL(sURL):
@@ -71,8 +72,8 @@ def GitAbsoluteCheckout(sURL,sBranch=""):
 def GetScriptRoot():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
-def GetFileContent(sFile):
-    vFile = open(sFile,'r')
+def GetFileContent(sFilePath):
+    vFile = open(sFilePath,'r')
     sContent = vFile.read()
     vFile.close()
     return sContent
@@ -208,16 +209,16 @@ def Run(sToRun):
     subprocess.run(shlex.split(sToRun,posix=False))
 
 #dev
-def Delete(sFileOrDir):
-    if os.path.isdir(sFileOrDir):
+def Delete(sFilePathOrDir):
+    if os.path.isdir(sFilePathOrDir):
         #-Change mode of all files to Write
-        for root, dirs, files in os.walk(sFileOrDir):
-            for sFile in files:
-                os.chmod(os.path.join(root,sFile), stat.S_IWRITE)
+        for root, dirs, files in os.walk(sFilePathOrDir):
+            for sFilePath in files:
+                os.chmod(os.path.join(root,sFilePath), stat.S_IWRITE)
         #-
-        shutil.rmtree(sFileOrDir)
-    elif os.path.exists(sFileOrDir):
-        os.remove(sFileOrDir)
+        shutil.rmtree(sFilePathOrDir)
+    elif os.path.exists(sFilePathOrDir):
+        os.remove(sFilePathOrDir)
 
 #dev
 def MakeDir(sDir, bCDInto=False):
@@ -253,15 +254,21 @@ class fragile(object):
             return True
         return error
 #dev
-def ImportFromDir(sName,sDir):
-    sys.path.insert(0,sDir)
-    return importlib.import_module(sName)
-
-#dev    
 #This function allows you to import a file witout poluting sys.path
-def ImportFromDir(sName,sDir):
-    sys.path.insert(0,sDir)
-    return importlib.import_module(sName)
+def ImportFromDir(sFilePath):
+    #---Determine sModuleName
+    sModuleName = os.path.split(sFilePath)[1]
+    if sModuleName[-3:] == ".py":
+        sModuleName = sModuleName[:-3]
+    #---Get vModule
+    vSpec = importlib.util.spec_from_file_location(sModuleName, sFilePath)
+    if vSpec is None:
+        raise ValueError("ImportFromDir`Could not retrieve spec. \nsModuleName:"+sModuleName+"\nsFilePath:"+sFilePath+"\nCurrentWorkingDir:"+os.getcwd())
+    vModule = importlib.util.module_from_spec(vSpec)
+    #---Execute vModule
+    vSpec.loader.exec_module(vModule)
+    #---
+    return vModule
 
 #dev
 def InstallAndImport(package):
@@ -288,9 +295,13 @@ def FnName(iShift=0):
    return inspect.stack()[1+iShift][3]
 
 #dev
-def IsTextInFile(sText,sFile):
-    with open(sFile, 'r') as vFile:
-        return sText in vFile.read()
+def IsTextInFile(sText,sFilePath):
+    try:
+        with open(sFilePath, 'r') as vFile:
+            return sText in vFile.read()
+    except UnicodeDecodeError:
+        with open(sFilePath, 'rb') as vFile:
+            return sText in "".join(map(chr, vFile.read()))
 
 #dev
 def ImportSubmodules(package, recursive=True):
