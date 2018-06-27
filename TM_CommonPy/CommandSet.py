@@ -102,6 +102,9 @@ class CommandSet:
                 return dill.load(handle)
         except FileNotFoundError:
             return TM.CommandSet()
+    #def ImportAndSave(sPath):
+
+
     def QueConanPackageRecommendedIntegrations(self,sProj,sConanBuildInfoTxtFile):
         for sRoot in _GetDependencyRoots(sConanBuildInfoTxtFile):
             vDoUndoPair = _GetRecommendedIntegrationsPair(sRoot)

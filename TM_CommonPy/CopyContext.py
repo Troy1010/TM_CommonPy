@@ -17,7 +17,7 @@ from TM_CommonPy import TMLog
 
 #beta
 class CopyContext:
-    def __init__(self,sSource,sDestination,bPostDelete=True,bCDInto=True,bPreDelete=True):
+    def __init__(self,sSource,sDestination,bPostDelete=False,bCDInto=True,bPreDelete=True):
         self.bCDInto = bCDInto
         self.bPostDelete = bPostDelete
         self.sDestination = sDestination
