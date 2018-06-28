@@ -19,6 +19,7 @@ if bWriteLog:
 ##region ImportThisModule
 from TM_CommonPy.Misc import *
 from TM_CommonPy.CommandSet import CommandSet
+from TM_CommonPy.CommandSet import GetRecommendedIntegrationFilePaths
 from TM_CommonPy.CopyContext import CopyContext
 from TM_CommonPy.ElementTreeContext import ElementTreeContext
 import TM_CommonPy.Narrator

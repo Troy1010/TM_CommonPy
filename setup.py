@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='TM_CommonPy'
-    ,version='0.2'
+    ,version='0.2.1'
     ,description='Troy1010\'s common python library'
     ,author='Troy1010'
     #,author_email=''
