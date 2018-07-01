@@ -14,7 +14,14 @@ try:
 except (PermissionError,FileNotFoundError):
     pass
 if bWriteLog:
-    TMLog.addHandler(logging.FileHandler(sLogFile))
+    for vHandler in TMLog.handlers:
+        try:
+            if vHandler.baseFilename == os.path.abspath(sLogFile):
+                break
+        except AttributeError:
+            pass
+    else:
+        TMLog.addHandler(logging.FileHandler(sLogFile))
 ##endregion
 ##region ImportThisModule
 from TM_CommonPy.Misc import *
