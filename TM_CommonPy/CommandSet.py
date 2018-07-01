@@ -66,7 +66,6 @@ class CommandSet:
     def __init__(self):
         self.PreviousCommandSet = []
         self.CommandSet = []
-        self.PreviousSavedImports = []
     def Que(self,cDoUndoPair,cArgs):
         if len(cDoUndoPair) != 2:
             raise ValueError(self.__class__.__name__+"::"+TM.FnName()+"`first arg must be a container of 2 methods: Do and Undo")
@@ -74,15 +73,15 @@ class CommandSet:
             cArgs = [cArgs]
         self.CommandSet.append([cDoUndoPair,cArgs])
     def QueImport(self,sFilePath):
-        sFileString = open(sFilePath, "rb").read()
-        sFileName = os.path.split(sPath)[1]
-        self.Exec2(sFileString,sFileName)
-        self.CommandSet.append([(self.DoNothing,self.Exec2),(sFileString,sFileName)])
+        sFileBytes = open(sFilePath, "rb").read()
+        sFileName = os.path.split(sFilePath)[1]
+        self.Exec2(sFileBytes,sFileName)
+        #sFileString = open(sFilePath, "r").read()
+        #TMLog.debug(TM.FnName()+"`sFileString:"+sFileString)
+        #Main()
+        self.CommandSet.append([(self.DoNothing,self.Exec2),(sFileBytes,sFileName)])
     def Execute(self,bRedo=False):
         TMLog.debug(self.__class__.__name__+"::"+TM.FnName()+"`Open")
-        #---Import PreviousSavedImports
-        for cFileInfo in self.PreviousSavedImports:
-            self.ExecFileInfo(cFileInfo)
         if bRedo:
             #---Undo what is in PreviousCommandSet
             for vItem in self.PreviousCommandSet:
@@ -116,7 +115,7 @@ class CommandSet:
     def _Undo(cDoUndoPair,cArgs):
         cDoUndoPair[1](*cArgs)
     @staticmethod
-    def DoNothing():
+    def DoNothing(a,b):
         pass
     @staticmethod
     def TryLoad():
@@ -125,18 +124,12 @@ class CommandSet:
                 return dill.load(handle)
         except FileNotFoundError:
             return TM.CommandSet()
-    # def ImportAndSave(sPath):
-    #     cFileInfo = { "sFileString" :: open(sPath, "rb").read()
-    #         "sFileName" :: os.path.split(sPath)[1]
-    #         }
-    #     self.PreviousSavedImports.append(cFileInfo)
-    #     ExecFileInfo(cFileInfo)
     @staticmethod
-    def Exec2(sFileString,sFileName):
-        exec(compile(sFileString, sFileName, 'exec'))
+    def Exec2(sFileBytes,sFileName):
+        exec(compile(sFileBytes, sFileName, 'exec'),globals())
     @staticmethod
     def ExecFileInfo(cFileInfo):
-        exec(compile(cFileInfo["sFileString"], cFileInfo["sFileName"], 'exec'))
+        exec(compile(cFileInfo["sFileBytes"], cFileInfo["sFileName"], 'exec'))
 
 
     def QueConanPackageRecommendedIntegrations(self,sProj,sConanBuildInfoTxtFile):
