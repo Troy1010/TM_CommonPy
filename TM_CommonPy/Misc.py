@@ -211,11 +211,13 @@ def RemoveElem(vElemToRemoveTemplate,vElemToRemoveFrom):
 
 #dev
 def IsCollection(vVar):
+    """Does not include strings as a collection"""
     try:
         iter(vVar)
-        bCanIter = True
-    except:
+    except TypeError:
         bCanIter = False
+    else:
+        bCanIter = True
     return bCanIter and not isinstance(vVar,str)
 
 #dev
