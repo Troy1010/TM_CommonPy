@@ -17,7 +17,7 @@ from pprint import pprint
 _self = sys.modules[__name__]
 iIndent = 0
 iRecursionLvl = 0
-iRecursionThreshold = 5
+iRecursionThreshold = 2
 bSentRecursionMsg = False
 cDuplicationGuardSet = None
 bHideDuplications = False
@@ -313,11 +313,11 @@ def _Narrate2(vVar,iRecursionThreshold=12345,bMultiLine=True,bIncludeProtected=F
 
 #------Public
 #release
-def Print(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False,bNarrateDuplications=False):
+def Print(vVar,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False,bNarrateDuplications=False):
     print(Narrate(vVar,iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications,bNarrateDuplications=bNarrateDuplications))
 
 #beta
-def Narrate(vVar,iRecursionThreshold=5,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False,bNarrateDuplications=False):
+def Narrate(vVar,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=[],bHideDuplications=False,bNarrateDuplications=False):
     _self.bHideDuplications = bHideDuplications
     _self.bNarrateDuplications = bNarrateDuplications
     ##region RecursionContext

@@ -285,6 +285,20 @@ class Test_TM_CommonPy(unittest.TestCase):
                 self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
             #-
 
+    def test_TryMkdir(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            self.assertFalse(os.path.isdir("Folder1a"))
+            TM.TryMkdir("Folder1a")
+            TM.TryMkdir("Folder1a")
+            self.assertTrue(os.path.isdir("Folder1a"))
+
+    def test_CommandSet_Save(self):
+        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            vCommandSet = TM.CommandSet()
+            vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
+            vCommandSet.Save()
+            self.assertTrue(os.path.isfile("CommandSet.pickle"))
+
     def test_CommandSet_ValueError(self):
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
             vCommandSet = TM.CommandSet()
@@ -302,15 +316,6 @@ class Test_TM_CommonPy(unittest.TestCase):
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
             for sRoot in _GetDependencyRoots("conanbuildinfo.txt"):
                 TMLog_Tests.debug(sRoot)
-
-    #This test relies on a specific environment
-    def test_QueRecommendedIntegrations(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
-            vCommandSet = TM.CommandSet()
-            vCommandSet.QueConanPackageRecommendedIntegrations("HelloWorld.vcxproj","conanbuildinfo.txt")
-            TMLog_Tests.debug(TM.Narrator.Narrate(vCommandSet.CommandSet))
-            vCommandSet.Execute()
 
     def test_ImportFromDir(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())

@@ -13,18 +13,34 @@ import importlib.util
 import TM_CommonPy.Narrator
 import ctypes
 import types
-from TM_CommonPy import TMLog
+from TM_CommonPy._Logger import TMLog
 import TM_CommonPy as TM
 
+##region Conan CommandSet
+def GetDependencyRoots(sConanBuildInfoTxtFile):
+    bRootIsNext = False
+    with open(sConanBuildInfoTxtFile,'r') as vFile:
+        cReturning = []
+        for sLine in vFile:
+            if "[rootpath_" in sLine:
+                bRootIsNext = True
+                continue
+            if bRootIsNext:
+                bRootIsNext = False
+                cReturning.append(sLine.strip())
+    TMLog.debug("GetDependencyRoots`cReturning:"+TM.Narrator.Narrate(cReturning))
+    return cReturning
+##endregion
+
 #dev
-def GetGitNameFromURL(sURL):
+def GetGitTitleFromURL(sURL):
     return sURL[sURL.rfind("/")+1:sURL.rfind(".git")]
 
 #dev
 def GitPullOrClone(sURL,bCDIntoFolder=False):
     #---Open
     sCWD = os.getcwd()
-    sName = GetGitNameFromURL(sURL)
+    sName = GetGitTitleFromURL(sURL)
     #---
     #-Try to find .git
     sPathToGit = ""
@@ -44,6 +60,13 @@ def GitPullOrClone(sURL,bCDIntoFolder=False):
             sCWD = sName
     #---Close
     os.chdir(sCWD)
+
+#beta
+def TryMkdir(sPath):
+    try:
+        os.mkdir(sPath)
+    except FileExistsError:
+        pass
 
 #dev
 def GitFullClean(bStash = False):
@@ -125,7 +148,7 @@ def Copy(sSrc,sDstDir,bPreDelete=False,sExclude=""):
         if not (sExclude != "" and sExclude in sSrc):
             shutil.copy(sSrc, sDstDir)
     else:
-        print("Copy|Error|sSrc "+sSrc+" is not a valid file or directory")
+        raise OSError("sSrc:"+sSrc+" is not a valid file or directory")
 
 def GetDictCount(cDict):
     return len(cDict.values())

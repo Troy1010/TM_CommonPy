@@ -16,21 +16,25 @@ import TM_CommonPy as TM
 from TM_CommonPy._Logger import TMLog
 
 #beta
-#depreciated by WorkspaceContext
-class CopyContext:
-    def __init__(self,sSource,sDestination,bPostDelete=False,bCDInto=True,bPreDelete=True):
+class WorkspaceContext:
+    def __init__(self,sPath,sSource=None,bPostDelete=True,bCDInto=True,bPreDelete=False):
         self.bCDInto = bCDInto
         self.bPostDelete = bPostDelete
-        self.sDestination = sDestination
+        self.sPath = sPath
         self.sSource = sSource
         self.bPreDelete = bPreDelete
     def __enter__(self):
-        TM.Copy(self.sSource,self.sDestination,bPreDelete=self.bPreDelete)
+        if self.bPreDelete:
+            TM.Delete(sPath)
+        if self.sSource is None:
+            TM.TryMkdir(self.sPath)
+        else:
+            TM.Copy(self.sSource,self.sPath)
         if self.bCDInto:
             self.OldCWD = os.getcwd()
-            os.chdir(self.sDestination)
+            os.chdir(self.sPath)
     def __exit__(self,errtype,value,traceback):
         if self.bCDInto:
             os.chdir(self.OldCWD)
         if self.bPostDelete:
-            TM.Delete(self.sDestination)
+            TM.Delete(self.sPath)
