@@ -19,48 +19,6 @@ import dill
 from enum import Enum
 from types import ModuleType
 
-##region Private
-def _GetDependencyRoots(sConanBuildInfoTxtFile):
-    bRootIsNext = False
-    with open(sConanBuildInfoTxtFile,'r') as vFile:
-        cReturning = []
-        for sLine in vFile:
-            if "[rootpath_" in sLine:
-                bRootIsNext = True
-                continue
-            if bRootIsNext:
-                bRootIsNext = False
-                cReturning.append(sLine.strip())
-    TMLog.debug("_GetDependencyRoots`cReturning:"+TM.Narrator.Narrate(cReturning))
-    return cReturning
-
-def GetRecommendedIntegrationFilePaths(sConanBuildInfoTxtFile):
-    cReturning = []
-    for sRoot in _GetDependencyRoots(sConanBuildInfoTxtFile):
-        sRecommendedIntegrationFile = os.path.join(sRoot,"RecommendedIntegration.py")
-        if os.path.isfile(sRecommendedIntegrationFile):
-            cReturning.append(sRecommendedIntegrationFile)
-    TMLog.debug("GetRecommendedIntegrationFilePaths`cReturning:"+TM.Narrator.Narrate(cReturning))
-    return cReturning
-
-
-
-def _GetRecommendedIntegrationsPair(sRoot):
-    sRecommendedIntegrationFile = os.path.join(sRoot,"RecommendedIntegration.py")
-    if os.path.isfile(sRecommendedIntegrationFile):
-        TMLog.debug(__name__+"::_GetRecommendedIntegrationsPairsRecommendedIntegrationFile is file:"+sRecommendedIntegrationFile)
-        RecommendedIntegration = TM.ImportFromDir(sRecommendedIntegrationFile)
-        # sys.path.insert(0,sRoot)
-        # import RecommendedIntegration
-        if not hasattr(RecommendedIntegration,"Main"):
-            raise AttributeError("RecommendedIntegration.Main")
-        if not hasattr(RecommendedIntegration,"Main_Undo"):
-            raise AttributeError("RecommendedIntegration.Main_Undo")
-        return (TM.CopyFunction(RecommendedIntegration.Main),TM.CopyFunction(RecommendedIntegration.Main_Undo))
-    else:
-        TMLog.debug(__name__+"::_GetRecommendedIntegrationsPair`sRecommendedIntegrationFile is NOT file:"+sRecommendedIntegrationFile)
-##endregion
-
 #I can't put this into CommandSet or it becomes unpickleable.
 #CommandSet_QueType = Enum("CommandSet_QueType","Function Script")
 class CommandSet_QueType(Enum):

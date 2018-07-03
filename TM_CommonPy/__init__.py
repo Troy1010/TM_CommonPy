@@ -7,5 +7,5 @@ from TM_CommonPy.CommandSet import CommandSet
 from TM_CommonPy.CopyContext import CopyContext
 from TM_CommonPy.WorkspaceContext import WorkspaceContext
 from TM_CommonPy.ElementTreeContext import ElementTreeContext
-import TM_CommonPy.Narrator
+from TM_CommonPy.Narrator import Narrate
 ##endregion

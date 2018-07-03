@@ -1,5 +1,8 @@
+import os
 ##region Settings
 bPostDelete = False
+bWriteLog = True
+sLogFile = os.path.join(__file__,'..','TMLog_Tests.log')
 bWriteLog = True
 ##endregion
 
@@ -12,20 +15,27 @@ import xml.etree.ElementTree
 
 import TM_CommonPy as TM
 import VisualStudioAutomation as VS
-#import TM_CommonPy.Narrator as TM.Narrator
-from TM_CommonPy.CommandSet import _GetRecommendedIntegrationsPair
-from TM_CommonPy.CommandSet import _GetDependencyRoots
 import dill
 import importlib
 
 ##region LogInit
-import logging, os
-TMLog_Tests = logging.getLogger('TM_CommonPy_Tests')
+import logging
+TMLog_Tests = logging.getLogger(__name__)
+TMLog_Tests.setLevel(logging.DEBUG)
+try:
+    os.remove(sLogFile)
+except (PermissionError,FileNotFoundError):
+    pass
 if bWriteLog:
-    sLogFile = os.path.join(__file__,'..','TMLog_Tests.log')
-    if os.path.exists(sLogFile):
-        os.remove(sLogFile)
-    TMLog_Tests.addHandler(logging.FileHandler(sLogFile))
+    bLogFileIsOpen = False
+    try:
+        os.rename(sLogFile,sLogFile)
+    except PermissionError:
+        bLogFileIsOpen = True
+    except FileNotFoundError:
+        pass
+    if not bLogFileIsOpen:
+        TMLog_Tests.addHandler(logging.FileHandler(sLogFile))
 ##endregion
 
 #legacy
@@ -113,37 +123,42 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         vFoundElem = TM.FindElem(vElemToFind,vTree)
         self.assertTrue(vFoundElem is None)
 
+    def test_Narrate(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_Tests.debug(TM.Narrate(True))
+        self.assertTrue("True" in TM.Narrate(True))
+        TMLog_Tests.debug(TM.Narrate(False))
+        self.assertTrue("False" in TM.Narrate(False))
+        TMLog_Tests.debug(TM.Narrate(None))
+        self.assertTrue("None" in TM.Narrate(None))
+        TMLog_Tests.debug(TM.Narrate("HelloString"))
+        self.assertTrue("HelloString" in TM.Narrate("HelloString"))
+
     def test_Narrate_Elem(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
-        print(TM.Narrator.Narrate(vRoot))
-        #self.assertTrue(False)
+        TMLog_Tests.debug(TM.Narrate(vRoot,iRecursionThreshold=5))
+        self.assertTrue("*Tag:   	{http://schemas.microsoft.com/developer/msbuild/2003}Project" in TM.Narrate(vRoot))
 
     def test_Narrate_Collection(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
         cArray = [30,40,80,10]
-        print(TM.Narrator.Narrate(cArray))
-        #self.assertTrue(False)
-
-    def test_Narrate_Bool(self):
-        print(TM.Narrator.Narrate(True))
-        print(TM.Narrator.Narrate(False))
-        #self.assertTrue(False)
-
-    def test_Narrate_None(self):
-        print(TM.Narrator.Narrate(None))
-        #self.assertTrue(False)
+        TMLog_Tests.debug(TM.Narrate(cArray))
+        self.assertTrue("2:80" in TM.Narrate(cArray))
 
     def test_Narrate_UnknownObj(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
         vObj = Te5tObj()
-        print(TM.Narrator.Narrate(vObj))
-        #self.assertTrue(False)
+        TMLog_Tests.debug(TM.Narrate(vObj))
+        self.assertTrue("Name:Te5tObject" in TM.Narrate(vObj))
 
-    def test_Narrate_Object2(self):
-        vObj = Te5tObj()
-        print(TM.Narrator.NarrateObject(vObj))
-        print("========")
-        print(TM.Narrator.NarrateObject_Options(vObj, bMethodsStartFull=False, bExtrasStartFull=False))
-        #self.assertTrue(False)
+    def test_Narrate_Proj(self):
+        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
+            TMLog_Tests.debug(TM.Narrate(vProjWrapper.vProj))
+            self.assertTrue("Name:HelloWorld" in TM.Narrate(vProjWrapper.vProj))
+
 
     #---GetDictCount
     def test_GetDictCount_ByExample(self):
@@ -179,7 +194,7 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         # print('start..')
         # for sFileName in TM.GetFileNames("."):
         #     print("sFileName:"+sFileName)
-        print(TM.Narrator.Narrate(TM.GetRelFileNames(".")))
+        print(TM.Narrate(TM.GetRelFileNames(".")))
         #self.assertTrue(False)
 
     def test_ListFiles(self):
@@ -206,23 +221,23 @@ class Test_TM_CommonPy(unittest.TestCase):
 
     #------Tests
     def test_RunPowershellScript_Try(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             TM.RunPowerShellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
 
     def test_Run(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             TM.Run("git clone -b beta https://github.com/Troy1010/TM_CommonCPP.git")
 
     def test_GitPullOrClone(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git")
 
     def test_CopyExclude(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             TM.Copy("Folder2","FolderCopied",sExclude="XML")
 
     def test_CommandSet(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             #-Pre-checking just to be sure test is set up correctly
             with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
                 self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
@@ -234,7 +249,7 @@ class Test_TM_CommonPy(unittest.TestCase):
                 self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
 
     def test_CommandSet2(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             #-Test
             with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
                 self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
@@ -252,7 +267,7 @@ class Test_TM_CommonPy(unittest.TestCase):
                 self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
 
     def test_CommandSet3(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             #---Open
             TM.Copy("HelloWorld.vcxproj","HelloWorld_Clean.vcxproj")
             #---
@@ -286,47 +301,47 @@ class Test_TM_CommonPy(unittest.TestCase):
             #-
 
     def test_TryMkdir(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             self.assertFalse(os.path.isdir("Folder1a"))
             TM.TryMkdir("Folder1a")
             TM.TryMkdir("Folder1a")
             self.assertTrue(os.path.isdir("Folder1a"))
 
     def test_CommandSet_Save(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
             vCommandSet.Save()
             self.assertTrue(os.path.isfile("CommandSet.pickle"))
 
     def test_CommandSet_ValueError(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             vCommandSet = TM.CommandSet()
             with self.assertRaises(ValueError):
                 vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
 
     def test_CommandSet_SingleArg(self):
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([TM.IsCollection,TM.IsCollection],"Project.vcxproj")
             vCommandSet.Execute()
 
     def test_GetDependencyRoots(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
-            for sRoot in _GetDependencyRoots("conanbuildinfo.txt"):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+            for sRoot in TM.GetDependencyRoots("conanbuildinfo.txt"):
                 TMLog_Tests.debug(sRoot)
 
     def test_ImportFromDir(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
-            zzqwer = TM.ImportFromDir("ReturnAString.py")
-            TMLog_Tests.debug(zzqwer.FnReturnAString())
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+            vModule = TM.ImportFromDir("ReturnAString.py")
+            TMLog_Tests.debug(vModule.FnReturnAString())
 
 
     def test_CopyFunction(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             vFn = TM.CopyFunction(VS.IntegrateProps)
             with open("pickle1","wb") as handle:
                 dill.dump(vFn,handle)
@@ -339,7 +354,7 @@ class Test_TM_CommonPy(unittest.TestCase):
 
     def test_CopyFunction2(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
             with open("pickleA1","rb") as handle:
                 vLoadedFn = dill.load(handle)
             with self.assertRaises(TypeError):
