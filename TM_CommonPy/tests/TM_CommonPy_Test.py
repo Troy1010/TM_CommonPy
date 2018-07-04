@@ -340,22 +340,16 @@ class Test_TM_CommonPy(unittest.TestCase):
 
 
     def test_CopyFunction(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
-            vFn = TM.CopyFunction(VS.IntegrateProps)
             with open("pickle1","wb") as handle:
-                dill.dump(vFn,handle)
-            self.assertTrue(TM.IsTextInFile("vTree",'pickle1'))
-
-            with open("pickle2","wb") as handle:
                 dill.dump(VS.IntegrateProps,handle)
-            self.assertFalse(TM.IsTextInFile("vTree",'pickle2'))
+            self.assertFalse(TM.IsTextInFile("vTree",'pickle1'))
 
+            vFn = TM.CopyFunction(VS.IntegrateProps)
+            with open("pickle2","wb") as handle:
+                dill.dump(vFn,handle)
+            self.assertTrue(TM.IsTextInFile("vTree",'pickle2'))
 
-    def test_CopyFunction2(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
-            with open("pickleA1","rb") as handle:
+            with open("pickle2","rb") as handle:
                 vLoadedFn = dill.load(handle)
-            with self.assertRaises(TypeError):
-                TMLog_Tests.debug(vLoadedFn())
+                self.assertTrue("IntegrateProps" in TM.Narrate(vLoadedFn,bIncludePrivate=True,bIncludeProtected=True,iRecursionThreshold=2))
