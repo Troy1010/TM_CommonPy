@@ -1,23 +1,17 @@
-##region Settings
-bDebug = False
-sIndent = "-"
-##endregion
-
-#In python, this file is already considered a class
 import os, sys
 import importlib
 import pip
 import xml.etree.ElementTree
 import shutil
-import TM_CommonPy as TMC
+import TM_CommonPy as TM
 import collections
 import numbers
 from pprint import pprint
 
 
 ##region Public
-def Narrate(vVar,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=None,bHideDuplications=False,bNarrateDuplications=False):
-    return Narrator(iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications,bNarrateDuplications=bNarrateDuplications)(vVar)
+def Narrate(vVar,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=None,bHideDuplications=False,bNarrateDuplications=False,sIndent="-"):
+    return Narrator(iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications,bNarrateDuplications=bNarrateDuplications,sIndent=sIndent)(vVar)
 ##endregion
 
 
@@ -62,8 +56,9 @@ class DuplicationGuard:
         return vVar in self.cDuplicationGuardSet
 
 class Narrator:
-    def __init__(self,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=None,bHideDuplications=False,bNarrateDuplications=False):
+    def __init__(self,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=None,bHideDuplications=False,bNarrateDuplications=False,sIndent="-"):
         #---Params
+        self.sIndent=sIndent
         self.bMultiLine=bMultiLine
         self.bIncludeProtected=bIncludeProtected
         self.bIncludePrivate=bIncludePrivate
@@ -76,11 +71,8 @@ class Narrator:
         #---
         self.cReturningStrings = []
     def __call__(self,vVar):
-        sReturning = ""
         self.Narrate(vVar)
-        for vItem in self.cReturningStrings:
-            sReturning += vItem
-        return sReturning
+        return "".join(self.cReturningStrings)
     def Narrate(self,vVar):
         ##region RecursionContext
         #Recursion should be checked before Narrate is re-called. This re-check is just a precaution.
@@ -121,8 +113,7 @@ class Narrator:
 
     #--------------------------------------------------------------------------------------
     def __Indent(self,iShift=0):
-        global sIndent
-        return sIndent * (self.vRecursionContext.iRecursionLvl + iShift)
+        return self.sIndent * (self.vRecursionContext.iRecursionLvl + iShift)
     def __NL(self,iShift=0):
         return '\n' +self.__Indent(iShift)
     def Narrate_COM(self,vObj):
@@ -291,7 +282,7 @@ class Narrator:
         self.cReturningStrings.append("*Tag:   \t"+str(vElem.tag))
         if not (vElem.text is None or vElem.text.isspace()):
             self.cReturningStrings.append(self.__NL(-1)+"text:  \t"+str(vElem.text).replace("\n","\\n"))
-        if not TMC.IsEmpty(vElem.attrib):
+        if not TM.IsEmpty(vElem.attrib):
             self.cReturningStrings.append(self.__NL(-1)+"attrib:\t")
             self.NarrateCollection(vElem.attrib, bMultiLine=False)
         if len(list(vElem)) !=0:
