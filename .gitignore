@@ -2,7 +2,9 @@
 **/TestWorkspace*
 
 
-
+.vs/*
+*.pyproj
+*.sln
 
 
 # Byte-compiled / optimized / DLL files

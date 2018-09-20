@@ -80,7 +80,7 @@ def GitFullClean(bStash = False):
 def GitAbsoluteCheckout(sURL,sBranch=""):
     #---Open
     sCWD = os.getcwd()
-    sName = GetGitNameFromURL(sURL)
+    sName = GetGitTitleFromURL(sURL)
     #---Get .git
     GitPullOrClone(sURL,bCDIntoFolder=True)
     #---Clean
