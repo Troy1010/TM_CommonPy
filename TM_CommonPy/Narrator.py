@@ -7,6 +7,7 @@ import TM_CommonPy as TM
 import collections
 import numbers
 from pprint import pprint
+from TM_CommonPy._Logger import TMLog
 
 
 ##region Public
@@ -31,7 +32,7 @@ class DuplicationGuard:
         self.bNarrateDuplications = bNarrateDuplications
         self.cDuplicationGuardSet = []
     def __call__(self,vVar):
-        #If vVar is in cDuplicationGuardSet, maybe report it. If it isn't, maybe add it.
+        #If vVar is in cDuplicationGuardSet, report it. If not, add it.
         if vVar in self.cDuplicationGuardSet:
             if not self.bNarrateDuplications:
                 return True
@@ -183,7 +184,7 @@ class Narrator:
             self.cReturningStrings.append("  <RecursionLvlReached>")
         else:
             for vKey,vValue in self.GetMembers_COM(vObj):
-                ##region DuplicationGuardContext
+                ##region DuplicationGuard
                 if self.vDuplicationGuard.IsDuplication(vValue) and self.bHideDuplications:
                     continue
                 ##endregion
@@ -211,16 +212,16 @@ class Narrator:
             try:
                 if bColHasKeys:
                     for i in range(cCollection.Count):
-                        ##region DuplicationGuardContext
-                        if DuplicationGuardContext.IsDuplication(GetValueOfPair_COMObject(cCollection[i])) and bHideDuplications:
+                        ##region DuplicationGuard
+                        if self.vDuplicationGuard.IsDuplication(self.GetValueOfPair_COMObject(cCollection[i])) and bHideDuplications:
                             continue
                         ##endregion
                         self.cReturningStrings.append(self.__NL() + str(cCollection[i].Name) + ":")
-                        self.Narrate(GetValueOfPair_COMObject(cCollection[i]))
+                        self.Narrate(self.GetValueOfPair_COMObject(cCollection[i]))
                 else:
                     for i in range(cCollection.Count):
-                        ##region DuplicationGuardContext
-                        if DuplicationGuardContext.IsDuplication(cCollection[i]) and bHideDuplications:
+                        ##region DuplicationGuard
+                        if self.vDuplicationGuard.IsDuplication(cCollection[i]) and bHideDuplications:
                             continue
                         ##endregion
                         self.cReturningStrings.append(self.__NL() + str(i)+":")
