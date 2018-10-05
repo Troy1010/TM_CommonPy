@@ -15,6 +15,20 @@ import ctypes
 import types
 from TM_CommonPy._Logger import TMLog
 import TM_CommonPy as TM
+import traceback
+
+#dev
+def DisplayDone():
+    print("\n\t\t\tDone\n")
+    os.system('pause')
+
+#dev
+def DisplayException(e):
+    print("====================================================================")
+    print("Traceback (most recent call last):")
+    traceback.print_tb(e.__traceback__)
+    print(e)
+    os.system('pause')
 
 ##region Conan CommandSet
 def GetDependencyRoots(sConanBuildInfoTxtFile):
