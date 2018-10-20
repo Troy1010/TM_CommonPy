@@ -2,7 +2,7 @@
 **/TestWorkspace*
 
 
-.vs/*
+.vs
 *.pyproj
 *.sln
 
