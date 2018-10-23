@@ -17,7 +17,7 @@ from TM_CommonPy._Logger import TMLog
 
 #beta
 class WorkspaceContext:
-    def __init__(self,sPath,sSource=None,bPostDelete=True,bCDInto=True,bPreDelete=False):
+    def __init__(self,sPath,sSource=None,bPostDelete=False,bCDInto=False,bPreDelete=False):
         self.bCDInto = bCDInto
         self.bPostDelete = bPostDelete
         self.sPath = sPath
@@ -25,7 +25,7 @@ class WorkspaceContext:
         self.bPreDelete = bPreDelete
     def __enter__(self):
         if self.bPreDelete:
-            TM.Delete(sPath)
+            TM.Delete(self.sPath)
         if self.sSource is None:
             TM.TryMkdir(self.sPath)
         else:
