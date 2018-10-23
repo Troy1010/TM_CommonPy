@@ -326,8 +326,8 @@ def TryGetCollectionAttrib(vObject,sAttribName):
         return []
 
 #dev
-def MsgBox(sMsg):
-    ctypes.windll.user32.MessageBoxW(0, sMsg, FnName(1), 1)
+def MsgBox(sMsg,iStyle=1):
+    return ctypes.windll.user32.MessageBoxW(0, sMsg, FnName(1), iStyle)
 
 #beta
 def FnName(iShift=0):
