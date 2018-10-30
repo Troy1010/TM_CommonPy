@@ -220,25 +220,31 @@ class Test_TM_CommonPy(unittest.TestCase):
             TM.Delete(self.sTestWorkspace)
 
     #------Tests
+    def test_GetNumsInString(self):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName()):
+            cNums = TM.GetNumsInString("345.54,4ertertrt547g3r5")
+            self.assertTrue(cNums == [345.54,4,547,3,5])
+
     def test_RunPowershellScript_Try(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             TM.RunPowerShellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
 
     def test_Run(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             TM.Run("git clone -b beta https://github.com/Troy1010/TM_CommonCPP.git")
 
     def test_GitPullOrClone(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git")
 
     def test_CopyExclude(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             TM.Copy("Folder2","FolderCopied",sExclude="XML")
 
     def test_CommandSet(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             #-Pre-checking just to be sure test is set up correctly
+            print("os.getcwd():"+os.getcwd())
             with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
                 self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
             #-
@@ -249,7 +255,7 @@ class Test_TM_CommonPy(unittest.TestCase):
                 self.assertTrue("conanbuildinfo.props" in vHelloWorldFile.read())
 
     def test_CommandSet2(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             #-Test
             with open("HelloWorld.vcxproj", 'r') as vHelloWorldFile:
                 self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
@@ -267,7 +273,7 @@ class Test_TM_CommonPy(unittest.TestCase):
                 self.assertFalse("conanbuildinfo.props" in vHelloWorldFile.read())
 
     def test_CommandSet3(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             #---Open
             TM.Copy("HelloWorld.vcxproj","HelloWorld_Clean.vcxproj")
             #---
@@ -301,46 +307,46 @@ class Test_TM_CommonPy(unittest.TestCase):
             #-
 
     def test_TryMkdir(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             self.assertFalse(os.path.isdir("Folder1a"))
             TM.TryMkdir("Folder1a")
             TM.TryMkdir("Folder1a")
             self.assertTrue(os.path.isdir("Folder1a"))
 
     def test_CommandSet_Save(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
             vCommandSet.Save()
             self.assertTrue(os.path.isfile("CommandSet.pickle"))
 
     def test_CommandSet_ValueError(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vCommandSet = TM.CommandSet()
             with self.assertRaises(ValueError):
                 vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
 
     def test_CommandSet_SingleArg(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([TM.IsCollection,TM.IsCollection],"Project.vcxproj")
             vCommandSet.Execute()
 
     def test_GetDependencyRoots(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             for sRoot in TM.GetDependencyRoots("conanbuildinfo.txt"):
                 TMLog_Tests.debug(sRoot)
 
     def test_ImportFromDir(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vModule = TM.ImportFromDir("ReturnAString.py")
             TMLog_Tests.debug(vModule.FnReturnAString())
 
 
     def test_CopyFunction(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             with open("pickle1","wb") as handle:
                 dill.dump(VS.IntegrateProps,handle)
             self.assertFalse(TM.IsTextInFile("vTree",'pickle1'))

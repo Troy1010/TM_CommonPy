@@ -18,6 +18,20 @@ import TM_CommonPy as TM
 import traceback
 
 #dev
+def GetNumsInString(sString):
+    cNums = []
+    sNum = ""
+    for vChar in sString:
+        if vChar.isdigit() or vChar == ".":
+            sNum += vChar
+        elif sNum:
+            cNums.append(float(sNum))
+            sNum = ""
+    if sNum: #Just in case the string ended at a num.
+        cNums.append(float(sNum))
+    return cNums
+
+#dev
 def DisplayDone():
     print("\n\t\t\tDone\n")
     os.system('pause')
