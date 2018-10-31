@@ -1,7 +1,9 @@
 from setuptools import setup
 
+cRequires = ('dill','openpyxl')
+
 setup(name='TM_CommonPy'
-    ,version='0.2.16'
+    ,version='1.0.0'
     ,description='Troy1010\'s common python library'
     ,author='Troy1010'
     #,author_email=''
@@ -10,8 +12,8 @@ setup(name='TM_CommonPy'
     ,packages=['TM_CommonPy']
     ,zip_safe=False
     ,test_suite='nose.collector'
-    ,tests_require=['nose']
+    ,tests_require=['nose',*cRequires]
     ,python_requires=">=3.6"
-    ,install_requires=['dill']
-    ,setup_requires=['nose']
+    ,install_requires=[*cRequires]
+    ,setup_requires=['nose',*cRequires]
     )

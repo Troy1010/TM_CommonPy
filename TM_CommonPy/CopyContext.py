@@ -1,3 +1,6 @@
+
+#DEPRECIATED
+
 import os, sys
 import importlib
 import pip
@@ -15,7 +18,6 @@ import ctypes
 import TM_CommonPy as TM
 from TM_CommonPy._Logger import TMLog
 
-#beta
 #depreciated by WorkspaceContext
 class CopyContext:
     def __init__(self,sSource,sDestination,bPostDelete=False,bCDInto=True,bPreDelete=True):

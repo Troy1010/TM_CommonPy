@@ -12,8 +12,10 @@ import os
 import shutil
 import sys
 import xml.etree.ElementTree
+import openpyxl
 
 import TM_CommonPy as TM
+import TM_CommonPy.openpyxl
 import VisualStudioAutomation as VS
 import dill
 import importlib
@@ -220,6 +222,17 @@ class Test_TM_CommonPy(unittest.TestCase):
             TM.Delete(self.sTestWorkspace)
 
     #------Tests
+    def test_openpyxl(self):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName()):
+            vWorkbook = openpyxl.Workbook()
+            vSheet = vWorkbook.active
+            self.assertTrue(TM.openpyxl.IsEmptySheet(vSheet))
+            self.assertEqual(0,TM.openpyxl.GetMaxCol(vSheet))
+            vSheet[TM.openpyxl.PosByXY(0,0)] = "HelloWorld"
+            self.assertFalse(TM.openpyxl.IsEmptySheet(vSheet))
+            self.assertEqual(1,TM.openpyxl.GetMaxCol(vSheet))
+            self.assertEqual("A1",TM.openpyxl.PosByCell(vSheet[TM.openpyxl.PosByXY(0,0)]))
+
     def test_GetNumsInString(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName()):
             cNums = TM.GetNumsInString("345.54,4ertertrt547g3r5")

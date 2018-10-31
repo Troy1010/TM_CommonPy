@@ -17,7 +17,7 @@ from TM_CommonPy._Logger import TMLog
 
 #beta
 class WorkspaceContext:
-    def __init__(self,sPath,sSource=None,bPostDelete=False,bCDInto=False,bPreDelete=False):
+    def __init__(self,sPath,sSource=None,bPostDelete=False,bCDInto=True,bPreDelete=False):
         self.bCDInto = bCDInto
         self.bPostDelete = bPostDelete
         self.sPath = sPath

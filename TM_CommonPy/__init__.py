@@ -1,4 +1,4 @@
-__version__ = '0.10.0'
+#__version__ = '0.0.0'
 #__all__ = ["CommandSet"]
 ##region ImportThisModule
 from TM_CommonPy.Misc import *
@@ -8,4 +8,5 @@ from TM_CommonPy.CopyContext import CopyContext
 from TM_CommonPy.WorkspaceContext import WorkspaceContext
 from TM_CommonPy.ElementTreeContext import ElementTreeContext
 from TM_CommonPy.Narrator import Narrate
+import TM_CommonPy.openpyxl
 ##endregion
