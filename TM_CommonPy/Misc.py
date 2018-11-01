@@ -18,6 +18,10 @@ import TM_CommonPy as TM
 import traceback
 
 #dev
+def RemoveWhitespace(sString):
+    return "".join(sString.split())
+
+#dev
 def GetNumsInString(sString):
     cNums = []
     sNum = ""

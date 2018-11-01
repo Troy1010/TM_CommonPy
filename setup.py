@@ -3,7 +3,7 @@ from setuptools import setup
 cRequires = ('dill','openpyxl')
 
 setup(name='TM_CommonPy'
-    ,version='1.0.0'
+    ,version='1.0.1'
     ,description='Troy1010\'s common python library'
     ,author='Troy1010'
     #,author_email=''
