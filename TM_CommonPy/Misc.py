@@ -19,8 +19,7 @@ import traceback
 
 #dev
 def RemoveWhitespace(s):
-    s = "".join(s.split())
-    return s
+    return "".join(s.split())
 
 #dev
 def GetNumsInString(sString):
