@@ -199,7 +199,7 @@ class Narrator:
                     break
             except:
                 pass
-        else: #If for loop never hit break.
+        else:
             bColHasKeys = True
         ##endregion
         self.cReturningStrings.append("Collection_COM..    Count:"+str(cCollection.Count))
