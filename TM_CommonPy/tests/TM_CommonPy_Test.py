@@ -88,9 +88,8 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
     #------Tests
     def test_RemoveWhitespace(self):
         s = b'<td>\n\t\t\t\t\t\t\t\t\t<span class="label">Hometown/High School:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t     \t      \n    \t    \t\t    \t\t\t    \t\t\t    \t    \t\t    \t\t\t\t\t\t\t\t\tNew Berlin, Wis.\n\t\t        \t\t    \t\t\t    \t\t\t\t/\n    \t\t\t    \t\t\t    \t    \t\t    \t\t\t\t\t\t\t\t\tEisenhower\n\t\t        \t\t    \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t    \t\t\t\t\t    \t\t\t\t'
-        s = s.decode("utf-8") 
-        print(TM.RemoveWhitespace(s))
-        self.assertTrue(False)
+        s = s.decode("utf-8")
+        self.assertTrue(TM.RemoveWhitespace(s)=='<td><spanclass="label">Hometown/HighSchool:</span>NewBerlin,Wis./Eisenhower</td>')
 
     def test_GetScriptRoot_IsString(self):
         s = TM.GetScriptRoot()
