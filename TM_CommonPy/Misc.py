@@ -45,7 +45,7 @@ def DisplayException(e):
     print("====================================================================")
     print("Traceback (most recent call last):")
     traceback.print_tb(e.__traceback__)
-    print(e)
+    print(type(e).__name__ + ": " + str(e))
     os.system('pause')
 
 ##region Conan CommandSet
