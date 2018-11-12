@@ -137,6 +137,10 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         self.assertTrue("None" in TM.Narrate(None))
         TMLog_Tests.debug(TM.Narrate("HelloString"))
         self.assertTrue("HelloString" in TM.Narrate("HelloString"))
+        vTe5tObj = Te5tObj()
+        sNarration = TM.Narrate(vTe5tObj)
+        TMLog_Tests.debug(sNarration)
+        self.assertTrue("Name:Te5tObject" in sNarration and "Method:" in sNarration and "TypeMethod:" in sNarration)
 
     def test_Narrate_Elem(self):
         TMLog_Tests.debug("\n\n-------"+TM.FnName())

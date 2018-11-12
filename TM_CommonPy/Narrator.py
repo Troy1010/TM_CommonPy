@@ -12,7 +12,7 @@ from TM_CommonPy._Logger import TMLog
 
 ##region Public
 def Narrate(vVar,iRecursionThreshold=2,bMultiLine=True,bIncludeProtected=False,bIncludePrivate=False,cMembers=[],bStartFull=True,cCOMSearchMembers=None,bHideDuplications=False,bNarrateDuplications=False,sIndent="-"):
-    return Narrator(iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications,bNarrateDuplications=bNarrateDuplications,sIndent=sIndent)(vVar)
+    return "".join(Narrator(iRecursionThreshold=iRecursionThreshold,bMultiLine=bMultiLine,bIncludeProtected=bIncludeProtected,bIncludePrivate=bIncludePrivate,cMembers=cMembers,bStartFull=bStartFull,cCOMSearchMembers=cCOMSearchMembers,bHideDuplications=bHideDuplications,bNarrateDuplications=bNarrateDuplications,sIndent=sIndent).Narrate(vVar))
 ##endregion
 
 
@@ -71,9 +71,6 @@ class Narrator:
         self.vDuplicationGuard = DuplicationGuard(bNarrateDuplications)
         #---
         self.cReturningStrings = []
-    def __call__(self,vVar):
-        self.Narrate(vVar)
-        return "".join(self.cReturningStrings)
     def Narrate(self,vVar):
         ##region RecursionContext
         #Recursion should be checked before Narrate is re-called. This re-check is just a precaution.
