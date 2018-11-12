@@ -6,7 +6,6 @@ import shutil
 import TM_CommonPy as TM
 import collections
 import numbers
-from pprint import pprint
 from TM_CommonPy._Logger import TMLog
 
 
@@ -117,8 +116,6 @@ class Narrator:
     def Narrate_COM(self,vObj):
         if hasattr(vObj,"Count"):
             self.Narrate_COM_Collection(vObj)
-        elif hasattr(vObj,"Name"):
-            self.Narrate_COM_Object(vObj)
         else:
             try:
                 self.Narrate_COM_Object(vObj)
@@ -137,6 +134,13 @@ class Narrator:
 
     #dir() does not work for all members of COM objects
     def GetMembers_COM(self,vObj):
+        #-Filter
+        try:
+            hasattr(vObj,"Object") #Somehow a few COM objects throw an error from this.
+        except:
+            TMLog.debug(TM.FnName()+"`failed hasattr filter. Probably didn't receive a normal COM_Object.")
+            raise
+        #-
         if self.cCOMSearchMembers is None:
             self.cCOMSearchMembers = ["Name"
                 ,"Object"
