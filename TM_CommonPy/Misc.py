@@ -18,8 +18,9 @@ import TM_CommonPy as TM
 import traceback
 
 #dev
-def RemoveWhitespace(sString):
-    return "".join(sString.split())
+def RemoveWhitespace(s):
+    s = "".join(s.split())
+    return s
 
 #dev
 def GetNumsInString(sString):
