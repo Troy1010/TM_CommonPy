@@ -156,6 +156,16 @@ class Test_TM_CommonPy(unittest.TestCase):
             TM.Delete(self.sTestWorkspace)
 
     #------Tests
+    def test_COM(self):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
+            TMLog_LogTests.info("\n\n-------"+TM.FnName())
+            with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
+                cProjFiles = TM.COM.COMCollectionToDict(vProjWrapper.vProj.Object.Files)
+                TMLog_LogTests.info(TM.Narrate(cProjFiles))
+                self.assertTrue(len(cProjFiles)==4)
+                for vKey,vItem in cProjFiles.items():
+                    self.assertTrue(vItem.Name in ("HelloWorld.cpp","stdafx.cpp","stdafx.h","targetver.h"))
+
     def test_openpyxl(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName()):
             vWorkbook = openpyxl.Workbook()
