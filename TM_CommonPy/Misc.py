@@ -48,22 +48,6 @@ def DisplayException(e):
     print(type(e).__name__ + ": " + str(e))
     os.system('pause')
 
-##region Conan CommandSet
-def GetDependencyRoots(sConanBuildInfoTxtFile):
-    bRootIsNext = False
-    with open(sConanBuildInfoTxtFile,'r') as vFile:
-        cReturning = []
-        for sLine in vFile:
-            if "[rootpath_" in sLine:
-                bRootIsNext = True
-                continue
-            if bRootIsNext:
-                bRootIsNext = False
-                cReturning.append(sLine.strip())
-    TMLog.debug("GetDependencyRoots`cReturning:"+TM.Narrator.Narrate(cReturning))
-    return cReturning
-##endregion
-
 #beta
 def TryMkdir(sPath):
     try:
@@ -130,9 +114,6 @@ def Copy(sSrc,sDstDir,bPreDelete=False,sExclude=""):
             shutil.copy(sSrc, sDstDir)
     else:
         raise OSError("sSrc:"+sSrc+" is not a valid file or directory")
-
-def GetDictCount(cDict):
-    return len(cDict.values())
 
 #alpha
 def IsEmpty(cCollection):

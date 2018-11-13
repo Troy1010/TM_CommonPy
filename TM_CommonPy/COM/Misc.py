@@ -1,6 +1,9 @@
 import win32com.client
 
-def COMCollectionToDict(cCOMCollection):
+def COMCollectionToDict(cCOMCollection, bTry=True):
+    cReturning = {}
+    if bTry and cCOMCollection is None:
+        return cReturning
     #-Determine bCollectionOfPairs
     #Checking for Value is tricky because hasattr will throw an error for depreciated objects
     bCollectionOfPairs = False
@@ -13,7 +16,6 @@ def COMCollectionToDict(cCOMCollection):
     else:
         bCollectionOfPairs = True
     #-
-    cReturning = {}
     for i in range(cCOMCollection.Count):
         if bCollectionOfPairs:
             cReturning[cCOMCollection[i].Name] = TryGetValue(cCOMCollection[i])

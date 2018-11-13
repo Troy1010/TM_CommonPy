@@ -11,4 +11,5 @@ from TM_CommonPy.Narrator import Narrate
 import TM_CommonPy.openpyxl
 import TM_CommonPy.COM
 import TM_CommonPy.git
+import TM_CommonPy.conan
 ##endregion

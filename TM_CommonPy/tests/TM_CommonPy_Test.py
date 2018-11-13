@@ -45,6 +45,9 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         os.chdir(os.path.join('..','..'))
 
     #------Tests
+    def test_GetDependencyRoots(self):
+        self.assertTrue(TM.conan.GetDependencyRoots("conanbuildinfo.txt") == ["C:/Users/2troy/.conan/data/OBSEPluginDevPackage/0.1/Troy1010/channel/package/265db0df056ee777e467d81c01e1c3f405931683","C:/Users/2troy/.conan/data/TM_CommonCPP/0.1/Troy1010/channel/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"])
+
     def test_RemoveWhitespace(self):
         s = b'<td>\n\t\t\t\t\t\t\t\t\t<span class="label">Hometown/High School:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t     \t      \n    \t    \t\t    \t\t\t    \t\t\t    \t    \t\t    \t\t\t\t\t\t\t\t\tNew Berlin, Wis.\n\t\t        \t\t    \t\t\t    \t\t\t\t/\n    \t\t\t    \t\t\t    \t    \t\t    \t\t\t\t\t\t\t\t\tEisenhower\n\t\t        \t\t    \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t    \t\t\t\t\t    \t\t\t\t'
         s = s.decode("utf-8")
@@ -120,10 +123,6 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
             TMLog_LogTests.info(TM.Narrate(vProjWrapper.vProj))
             self.assertTrue("Name:HelloWorld" in TM.Narrate(vProjWrapper.vProj))
-
-    def test_GetDictCount_ByExample(self):
-        cDict = {"age":25,"blue":3,"cat":5}
-        self.assertTrue(TM.GetDictCount(cDict) == 3)
 
     def test_GetRelFileNames(self):
         TMLog_LogTests.info("\n\n-------"+TM.FnName())
@@ -299,12 +298,6 @@ class Test_TM_CommonPy(unittest.TestCase):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([TM.IsCollection,TM.IsCollection],"Project.vcxproj")
             vCommandSet.Execute()
-
-    def test_GetDependencyRoots(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
-            for sRoot in TM.GetDependencyRoots("conanbuildinfo.txt"):
-                TMLog_LogTests.info(sRoot)
 
     def test_ImportFromDir(self):
         TMLog_LogTests.info("\n\n-------"+TM.FnName())
