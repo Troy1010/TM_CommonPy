@@ -122,16 +122,6 @@ class Narrator:
             except:
                 self.cReturningStrings.append("<failureToExtract>")
 
-    #If you try to vObj.Value depreciated COM objects, an error is thrown.
-    def GetValueOfPair_COMObject(self,vObj):
-        try:
-            if hasattr(vObj,"Value"): #This is known to throw an error for depreciated objects.
-                return getattr(vObj,"Value")
-            else:
-                return "<None>"
-        except:
-            return "<ValueError>"
-
     #dir() does not work for all members of COM objects
     def GetMembers_COM(self,vObj):
         #-Filter
@@ -192,45 +182,17 @@ class Narrator:
                 self.cReturningStrings.append(self.__NL() + vKey + ":")
                 self.Narrate(vValue)
 
-
     def Narrate_COM_Collection(self,cCollection):
-        ##region Determine bColHasKeys
-        #Checking for Value is tricky because hasattr will throw an error for depreciated objects
-        bColHasKeys = False
-        for i in range(cCollection.Count):
-            try:
-                if not hasattr(cCollection[i],"Value"):
-                    break
-            except:
-                pass
-        else:
-            bColHasKeys = True
-        ##endregion
+        #Filtering is tricky because hasattr(cCollection) will throw an error for depreciated objects
         self.cReturningStrings.append("Collection_COM..    Count:"+str(cCollection.Count))
         if self.vRecursionContext.IsThresholdMet():
             self.cReturningStrings.append("  <RecursionLvlReached>")
         else:
-            try:
-                if bColHasKeys:
-                    for i in range(cCollection.Count):
-                        ##region DuplicationGuard
-                        if self.vDuplicationGuard.IsDuplication(self.GetValueOfPair_COMObject(cCollection[i])) and bHideDuplications:
-                            continue
-                        ##endregion
-                        self.cReturningStrings.append(self.__NL() + str(cCollection[i].Name) + ":")
-                        self.Narrate(self.GetValueOfPair_COMObject(cCollection[i]))
-                else:
-                    for i in range(cCollection.Count):
-                        ##region DuplicationGuard
-                        if self.vDuplicationGuard.IsDuplication(cCollection[i]) and bHideDuplications:
-                            continue
-                        ##endregion
-                        self.cReturningStrings.append(self.__NL() + str(i)+":")
-                        self.Narrate(cCollection[i])
-            except:
-                self.cReturningStrings.append("  <ExceptionRaised>")
-
-
+            for vKey,vValue in TM.COM.COMCollectionToDict(cCollection):
+                if self.vDuplicationGuard.IsDuplication(vValue) and bHideDuplications:
+                    continue
+                self.cReturningStrings.append(self.__NL() + str(vKey) + ":")
+                self.Narrate(vValue)
 
     #cMembers are exclusionary if they start full, inclusionary if they start empty.
     def NarrateObject(self,vObj):
