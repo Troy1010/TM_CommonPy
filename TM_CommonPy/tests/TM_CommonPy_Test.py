@@ -1,9 +1,6 @@
 import os
 ##region Settings
 bPostDelete = False
-bWriteLog = True
-sLogFile = os.path.join(__file__,'..','TMLog_Tests.log')
-bWriteLog = True
 ##endregion
 
 import unittest
@@ -19,26 +16,7 @@ import TM_CommonPy.openpyxl
 import VisualStudioAutomation as VS
 import dill
 import importlib
-
-##region LogInit
-import logging
-TMLog_Tests = logging.getLogger(__name__)
-TMLog_Tests.setLevel(logging.DEBUG)
-try:
-    os.remove(sLogFile)
-except (PermissionError,FileNotFoundError):
-    pass
-if bWriteLog:
-    bLogFileIsOpen = False
-    try:
-        os.rename(sLogFile,sLogFile)
-    except PermissionError:
-        bLogFileIsOpen = True
-    except FileNotFoundError:
-        pass
-    if not bLogFileIsOpen:
-        TMLog_Tests.addHandler(logging.FileHandler(sLogFile))
-##endregion
+from TM_CommonPy.tests._Logger import TMLog_LogTests
 
 class Te5tObj():
     Name = "Te5tObject"
@@ -109,43 +87,43 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         self.assertTrue(vFoundElem is None)
 
     def test_Narrate(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
-        TMLog_Tests.debug(TM.Narrate(True))
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug(TM.Narrate(True))
         self.assertTrue("True" in TM.Narrate(True))
-        TMLog_Tests.debug(TM.Narrate(False))
+        TMLog_LogTests.debug(TM.Narrate(False))
         self.assertTrue("False" in TM.Narrate(False))
-        TMLog_Tests.debug(TM.Narrate(None))
+        TMLog_LogTests.debug(TM.Narrate(None))
         self.assertTrue("None" in TM.Narrate(None))
-        TMLog_Tests.debug(TM.Narrate("HelloString"))
+        TMLog_LogTests.debug(TM.Narrate("HelloString"))
         self.assertTrue("HelloString" in TM.Narrate("HelloString"))
         vTe5tObj = Te5tObj()
         sNarration = TM.Narrate(vTe5tObj)
-        TMLog_Tests.debug(sNarration)
+        TMLog_LogTests.debug(sNarration)
         self.assertTrue("Name:Te5tObject" in sNarration and "Method:" in sNarration and "TypeMethod:" in sNarration)
 
     def test_Narrate_Elem(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
-        TMLog_Tests.debug(TM.Narrate(vRoot,iRecursionThreshold=5))
+        TMLog_LogTests.debug(TM.Narrate(vRoot,iRecursionThreshold=5))
         self.assertTrue("*Tag:   	{http://schemas.microsoft.com/developer/msbuild/2003}Project" in TM.Narrate(vRoot))
 
     def test_Narrate_Collection(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
         cArray = [30,40,80,10]
-        TMLog_Tests.debug(TM.Narrate(cArray))
+        TMLog_LogTests.debug(TM.Narrate(cArray))
         self.assertTrue("2:80" in TM.Narrate(cArray))
 
     def test_Narrate_UnknownObj(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
         vObj = Te5tObj()
-        TMLog_Tests.debug(TM.Narrate(vObj))
+        TMLog_LogTests.debug(TM.Narrate(vObj))
         self.assertTrue("Name:Te5tObject" in TM.Narrate(vObj))
 
     def test_Narrate_Proj(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
         with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
-            TMLog_Tests.debug(TM.Narrate(vProjWrapper.vProj))
+            TMLog_LogTests.debug(TM.Narrate(vProjWrapper.vProj))
             self.assertTrue("Name:HelloWorld" in TM.Narrate(vProjWrapper.vProj))
 
 
@@ -333,16 +311,16 @@ class Test_TM_CommonPy(unittest.TestCase):
             vCommandSet.Execute()
 
     def test_GetDependencyRoots(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             for sRoot in TM.GetDependencyRoots("conanbuildinfo.txt"):
-                TMLog_Tests.debug(sRoot)
+                TMLog_LogTests.debug(sRoot)
 
     def test_ImportFromDir(self):
-        TMLog_Tests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vModule = TM.ImportFromDir("ReturnAString.py")
-            TMLog_Tests.debug(vModule.FnReturnAString())
+            TMLog_LogTests.debug(vModule.FnReturnAString())
 
 
     def test_CopyFunction(self):
