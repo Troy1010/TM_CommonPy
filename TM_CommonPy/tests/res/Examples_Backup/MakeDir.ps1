@@ -1,0 +1,1 @@
+New-Item -ItemType directory -Path IAmADir | Out-Null

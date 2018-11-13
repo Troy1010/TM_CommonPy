@@ -51,27 +51,22 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         self.assertTrue(TM.RemoveWhitespace(s)=='<td><spanclass="label">Hometown/HighSchool:</span>NewBerlin,Wis./Eisenhower</td>')
 
     def test_GetScriptRoot_IsString(self):
-        s = TM.GetScriptRoot()
-        self.assertTrue(isinstance(s, str))
+        self.assertTrue(isinstance(TM.GetScriptRoot(), str))
 
     def test_GetFileContent_IsString(self):
-        s = TM.GetFileContent('ExampleXML.xml')
-        self.assertTrue(isinstance(s, str))
+        self.assertTrue(isinstance(TM.GetFileContent('ExampleXML.xml'), str))
 
     def test_GetFileContent_ByExample(self):
         self.assertEqual(TM.GetFileContent('ExampleTXT.txt'),"I am example txt.\nHear me. Or, read me, rather.")
 
     def test_GetFileContent_ByExample2(self):
-        b = TM.GetFileContent('ExampleTXT.txt') == "tyurityihghty"
-        self.assertTrue(not b)
+        self.assertTrue(TM.GetFileContent('ExampleTXT.txt') != "tyurityihghty")
 
     def test_GetXMLNamespaces_ByExample(self):
-        b = str(TM.GetXMLNamespaces('ExampleXML.xml')) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
-        self.assertTrue(b)
+        self.assertTrue(str(TM.GetXMLNamespaces('ExampleXML.xml')) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}')
 
     def test_GetXMLNamespaces_ByExample_HasBOM(self):
-        b = str(TM.GetXMLNamespaces('ExampleXML_HasBOM.xml')) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}'
-        self.assertTrue(b)
+        self.assertTrue(str(TM.GetXMLNamespaces('ExampleXML_HasBOM.xml')) == '{\'\': \'http://schemas.microsoft.com/developer/msbuild/2003\'}')
 
     def test_FindElem(self):
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
@@ -87,90 +82,64 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         self.assertTrue(vFoundElem is None)
 
     def test_Narrate(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
-        TMLog_LogTests.debug(TM.Narrate(True))
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info(TM.Narrate(True))
         self.assertTrue("True" in TM.Narrate(True))
-        TMLog_LogTests.debug(TM.Narrate(False))
+        TMLog_LogTests.info(TM.Narrate(False))
         self.assertTrue("False" in TM.Narrate(False))
-        TMLog_LogTests.debug(TM.Narrate(None))
+        TMLog_LogTests.info(TM.Narrate(None))
         self.assertTrue("None" in TM.Narrate(None))
-        TMLog_LogTests.debug(TM.Narrate("HelloString"))
+        TMLog_LogTests.info(TM.Narrate("HelloString"))
         self.assertTrue("HelloString" in TM.Narrate("HelloString"))
         vTe5tObj = Te5tObj()
         sNarration = TM.Narrate(vTe5tObj)
-        TMLog_LogTests.debug(sNarration)
+        TMLog_LogTests.info(sNarration)
         self.assertTrue("Name:Te5tObject" in sNarration and "Method:" in sNarration and "TypeMethod:" in sNarration)
 
     def test_Narrate_Elem(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
-        TMLog_LogTests.debug(TM.Narrate(vRoot,iRecursionThreshold=5))
+        TMLog_LogTests.info(TM.Narrate(vRoot,iRecursionThreshold=5))
         self.assertTrue("*Tag:   	{http://schemas.microsoft.com/developer/msbuild/2003}Project" in TM.Narrate(vRoot))
 
     def test_Narrate_Collection(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         cArray = [30,40,80,10]
-        TMLog_LogTests.debug(TM.Narrate(cArray))
+        TMLog_LogTests.info(TM.Narrate(cArray))
         self.assertTrue("2:80" in TM.Narrate(cArray))
 
     def test_Narrate_UnknownObj(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         vObj = Te5tObj()
-        TMLog_LogTests.debug(TM.Narrate(vObj))
+        TMLog_LogTests.info(TM.Narrate(vObj))
         self.assertTrue("Name:Te5tObject" in TM.Narrate(vObj))
 
     def test_Narrate_Proj(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
-            TMLog_LogTests.debug(TM.Narrate(vProjWrapper.vProj))
+            TMLog_LogTests.info(TM.Narrate(vProjWrapper.vProj))
             self.assertTrue("Name:HelloWorld" in TM.Narrate(vProjWrapper.vProj))
 
-
-    #---GetDictCount
     def test_GetDictCount_ByExample(self):
         cDict = {"age":25,"blue":3,"cat":5}
         self.assertTrue(TM.GetDictCount(cDict) == 3)
 
-
-    #------Extra tests
-    def test_Does_And_ShortCircuit(self):
-        dict1 = {"zeed":1,"beep":2}
-        for vKey,vValue in dict1.items():
-            if "boop" in dict1 and dict1["boop"] == 1:
-                pass
-
-    def test_CanYouKeyValueArrays(self):
-        #array1 = [30,60,80,50]
-        #for vKey, vValue in array1:
-        #    print(str(vKey)+":"+str(vValue))
-        pass
-
-    def test_CanYouIterateNone(self):
-        #vNone = None
-        #for vChild in None:
-        #    print("I'm alive!")
-        pass
-
-    def test_CanYouDelFromEmptyDict(self):
-        #cDict = {}
-        #del cDict["tre"]
-        pass
-
-    def test_GetFileStrings(self):
-        # print('start..')
-        # for sFileName in TM.GetFileNames("."):
-        #     print("sFileName:"+sFileName)
-        print(TM.Narrate(TM.GetRelFileNames(".")))
-        #self.assertTrue(False)
+    def test_GetRelFileNames(self):
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info(TM.Narrate(TM.GetRelFileNames(".")))
 
     def test_ListFiles(self):
-        print(TM.ListFiles("."))
-#        self.assertTrue(False)
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info(TM.ListFiles("."))
 
     def test_IsCollection(self):
         self.assertTrue(TM.IsCollection(["beep","boop"]))
         self.assertFalse(TM.IsCollection("beep"))
+
+    def test_GetNumsInString(self):
+        cNums = TM.GetNumsInString("345.54,4ertertrt547g3r5")
+        self.assertTrue(cNums == [345.54,4,547,3,5])
 
 class Test_TM_CommonPy(unittest.TestCase):
     sTestWorkspace = "TestWorkspace/"
@@ -198,18 +167,18 @@ class Test_TM_CommonPy(unittest.TestCase):
             self.assertEqual(1,TM.openpyxl.GetMaxCol(vSheet))
             self.assertEqual("A1",TM.openpyxl.PosByCell(vSheet[TM.openpyxl.PosByXY(0,0)]))
 
-    def test_GetNumsInString(self):
-        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName()):
-            cNums = TM.GetNumsInString("345.54,4ertertrt547g3r5")
-            self.assertTrue(cNums == [345.54,4,547,3,5])
-
     def test_RunPowershellScript_Try(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
-            TM.RunPowerShellScript(os.path.join(os.getcwd(),'HelloWorld.ps1'))
+            self.assertFalse("IAmADir" in os.listdir())
+            vProcess = TM.RunPowerShellScript(os.path.join(os.getcwd(),'MakeDir.ps1'))
+            self.assertTrue("powershell.exe" in TM.Narrate(vProcess))
+            self.assertTrue("IAmADir" in os.listdir())
 
     def test_Run(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
-            TM.Run("git clone -b beta https://github.com/Troy1010/TM_CommonCPP.git")
+            self.assertFalse("ThisIsADir" in os.listdir())
+            TM.Run("python Script_MkDir.py")
+            self.assertTrue("ThisIsADir" in os.listdir())
 
     def test_GitPullOrClone(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
@@ -311,16 +280,16 @@ class Test_TM_CommonPy(unittest.TestCase):
             vCommandSet.Execute()
 
     def test_GetDependencyRoots(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             for sRoot in TM.GetDependencyRoots("conanbuildinfo.txt"):
-                TMLog_LogTests.debug(sRoot)
+                TMLog_LogTests.info(sRoot)
 
     def test_ImportFromDir(self):
-        TMLog_LogTests.debug("\n\n-------"+TM.FnName())
+        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vModule = TM.ImportFromDir("ReturnAString.py")
-            TMLog_LogTests.debug(vModule.FnReturnAString())
+            TMLog_LogTests.info(vModule.FnReturnAString())
 
 
     def test_CopyFunction(self):
