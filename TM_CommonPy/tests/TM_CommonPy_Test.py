@@ -45,6 +45,14 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         os.chdir(os.path.join('..','..'))
 
     #------Tests
+    def test_Counter(self):
+        vCounter = TM.Counter()
+        self.assertTrue(vCounter() == 0)
+        self.assertTrue(vCounter() == 1)
+        self.assertTrue(vCounter() == 2)
+        vCounter.reset()
+        self.assertTrue(vCounter() == 0)
+
     def test_GetDependencyRoots(self):
         self.assertTrue(TM.conan.GetDependencyRoots("conanbuildinfo.txt") == ["C:/Users/2troy/.conan/data/OBSEPluginDevPackage/0.1/Troy1010/channel/package/265db0df056ee777e467d81c01e1c3f405931683","C:/Users/2troy/.conan/data/TM_CommonCPP/0.1/Troy1010/channel/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"])
 
