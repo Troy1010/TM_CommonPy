@@ -9,4 +9,6 @@ from TM_CommonPy.WorkspaceContext import WorkspaceContext
 from TM_CommonPy.ElementTreeContext import ElementTreeContext
 from TM_CommonPy.Narrator import Narrate
 import TM_CommonPy.openpyxl
+import TM_CommonPy.COM
+import TM_CommonPy.git
 ##endregion

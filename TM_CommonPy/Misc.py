@@ -64,76 +64,12 @@ def GetDependencyRoots(sConanBuildInfoTxtFile):
     return cReturning
 ##endregion
 
-#dev
-def GetGitTitleFromURL(sURL):
-    return sURL[sURL.rfind("/")+1:sURL.rfind(".git")]
-
-#dev
-def GitPullOrClone(sURL,bCDInto=False,bQuiet=False):
-    #---Open
-    sCWD = os.getcwd()
-    sName = GetGitTitleFromURL(sURL)
-    #---
-    #-Try to find .git
-    sPathToGit = ""
-    if os.path.exists(".git"):
-        sPathToGit = "."
-    elif os.path.exists(os.path.join(sName,".git")):
-        sPathToGit = sName
-    #-Pull or clone
-    if sPathToGit != "":
-        os.chdir(sPathToGit)
-        sRunCmd = "git pull "+sURL
-        if bCDInto:
-            sCWD = "."
-    else:
-        sRunCmd = "git clone "+sURL+" --no-checkout"
-        if bCDInto:
-            sCWD = sName
-    if bQuiet:
-        sRunCmd += " --quiet"
-    Run(sRunCmd)
-    #---Close
-    os.chdir(sCWD)
-
 #beta
 def TryMkdir(sPath):
     try:
         os.mkdir(sPath)
     except FileExistsError:
         pass
-
-#dev
-def GitFullClean(bStash = False, bQuiet=False):
-    if bStash:
-        if bQuiet:
-            Run("git stash -u --quiet")
-        else:
-            Run("git stash -u")
-    else:
-        if bQuiet:
-            Run("git clean -f --quiet")
-            Run("git reset --hard --quiet")
-        else:
-            Run("git clean -f")
-            Run("git reset --hard")
-
-#dev
-def GitAbsoluteCheckout(sURL,sBranch="",bQuiet=False):
-    #---Open
-    sCWD = os.getcwd()
-    sName = GetGitTitleFromURL(sURL)
-    #---Get .git
-    GitPullOrClone(sURL,bCDInto=True,bQuiet=bQuiet)
-    #---Clean
-    GitFullClean(bQuiet=bQuiet)
-    #---Checkout
-    if bQuiet:
-        Run("git checkout "+sBranch+" --quiet")
-    else:
-        Run("git checkout "+sBranch)
-    #---Close
-    os.chdir(sCWD)
 
 #beta
 #Maybe use __file__ instead?

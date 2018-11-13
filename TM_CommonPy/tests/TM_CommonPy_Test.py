@@ -183,18 +183,21 @@ class Test_TM_CommonPy(unittest.TestCase):
     def test_GitPullOrClone(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             self.assertFalse(os.path.exists("TM_CommonCPP/"))
-            TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git", bQuiet=True)
+            TM.git.PullOrClone("https://github.com/Troy1010/TM_CommonCPP.git", bQuiet=True)
             self.assertTrue(os.listdir("TM_CommonCPP/") == [".git"])
 
     def test_GitAbsoluteCheckout(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             self.assertFalse(os.path.exists("TM_CommonCPP/"))
-            TM.GitAbsoluteCheckout("https://github.com/Troy1010/TM_CommonCPP.git", bQuiet=True)
+            TM.git.AbsoluteCheckout("https://github.com/Troy1010/TM_CommonCPP.git", bQuiet=True)
             self.assertTrue(os.path.exists("TM_CommonCPP/TM_CommonCPP.sln"))
 
     def test_CopyExclude(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
+            self.assertFalse(os.path.exists("FolderCopied/"))
             TM.Copy("Folder2","FolderCopied",sExclude="XML")
+            self.assertTrue(os.path.exists("FolderCopied/"))
+            self.assertFalse(os.path.exists("FolderCopied/ExampleXML.xml"))
 
     def test_CommandSet(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
@@ -281,7 +284,7 @@ class Test_TM_CommonPy(unittest.TestCase):
             with self.assertRaises(ValueError):
                 vCommandSet.Que([VS.IntegrateProps,VS.IntegrateProps_Undo,VS.IntegrateProps_Undo],["HelloWorld.vcxproj","conanbuildinfo.props"])
 
-    def test_CommandSet_SingleArg(self):
+    def test_CommandSet_SingleArg_Try(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vCommandSet = TM.CommandSet()
             vCommandSet.Que([TM.IsCollection,TM.IsCollection],"Project.vcxproj")
