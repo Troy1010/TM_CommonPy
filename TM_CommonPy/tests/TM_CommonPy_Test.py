@@ -40,25 +40,6 @@ if bWriteLog:
         TMLog_Tests.addHandler(logging.FileHandler(sLogFile))
 ##endregion
 
-#legacy
-def __Copy(src,root_dst_dir):
-    if os.path.isdir(src):
-        for src_dir, dirs, files in os.walk(src):
-            dst_dir = src_dir.replace(src, root_dst_dir, 1)
-            if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir)
-            for file_ in files:
-                src_file = os.path.join(src_dir, file_)
-                dst_file = os.path.join(dst_dir, file_)
-                if os.path.exists(dst_file):
-                    os.remove(dst_file)
-                shutil.copy(src_file, dst_dir)
-    elif os.path.isfile(src):
-        dst_dir = src_dir.replace(src, root_dst_dir, 1)
-        shutil.copy(src, dst_dir)
-    else:
-        print("__Copy\\Error\\src is not a valid file or directory")
-
 class Te5tObj():
     Name = "Te5tObject"
 
