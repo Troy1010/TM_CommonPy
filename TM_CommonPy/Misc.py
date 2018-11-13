@@ -69,7 +69,7 @@ def GetGitTitleFromURL(sURL):
     return sURL[sURL.rfind("/")+1:sURL.rfind(".git")]
 
 #dev
-def GitPullOrClone(sURL,bCDIntoFolder=False):
+def GitPullOrClone(sURL,bCDInto=False,bQuiet=False):
     #---Open
     sCWD = os.getcwd()
     sName = GetGitTitleFromURL(sURL)
@@ -83,13 +83,16 @@ def GitPullOrClone(sURL,bCDIntoFolder=False):
     #-Pull or clone
     if sPathToGit != "":
         os.chdir(sPathToGit)
-        Run("git pull "+sURL)
-        if bCDIntoFolder:
+        sRunCmd = "git pull "+sURL
+        if bCDInto:
             sCWD = "."
     else:
-        Run("git clone "+sURL+" --no-checkout")
-        if bCDIntoFolder:
+        sRunCmd = "git clone "+sURL+" --no-checkout"
+        if bCDInto:
             sCWD = sName
+    if bQuiet:
+        sRunCmd += " --quiet"
+    Run(sRunCmd)
     #---Close
     os.chdir(sCWD)
 
@@ -101,24 +104,34 @@ def TryMkdir(sPath):
         pass
 
 #dev
-def GitFullClean(bStash = False):
+def GitFullClean(bStash = False, bQuiet=False):
     if bStash:
-        Run("git stash -u")
+        if bQuiet:
+            Run("git stash -u --quiet")
+        else:
+            Run("git stash -u")
     else:
-        Run("git clean -f")
-        Run("git reset --hard")
+        if bQuiet:
+            Run("git clean -f --quiet")
+            Run("git reset --hard --quiet")
+        else:
+            Run("git clean -f")
+            Run("git reset --hard")
 
 #dev
-def GitAbsoluteCheckout(sURL,sBranch=""):
+def GitAbsoluteCheckout(sURL,sBranch="",bQuiet=False):
     #---Open
     sCWD = os.getcwd()
     sName = GetGitTitleFromURL(sURL)
     #---Get .git
-    GitPullOrClone(sURL,bCDIntoFolder=True)
+    GitPullOrClone(sURL,bCDInto=True,bQuiet=bQuiet)
     #---Clean
-    GitFullClean()
+    GitFullClean(bQuiet=bQuiet)
     #---Checkout
-    Run("git checkout "+sBranch)
+    if bQuiet:
+        Run("git checkout "+sBranch+" --quiet")
+    else:
+        Run("git checkout "+sBranch)
     #---Close
     os.chdir(sCWD)
 

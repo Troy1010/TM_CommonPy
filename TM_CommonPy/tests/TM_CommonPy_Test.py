@@ -182,7 +182,15 @@ class Test_TM_CommonPy(unittest.TestCase):
 
     def test_GitPullOrClone(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
-            TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git")
+            self.assertFalse(os.path.exists("TM_CommonCPP/"))
+            TM.GitPullOrClone("https://github.com/Troy1010/TM_CommonCPP.git", bQuiet=True)
+            self.assertTrue(os.listdir("TM_CommonCPP/") == [".git"])
+
+    def test_GitAbsoluteCheckout(self):
+        with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
+            self.assertFalse(os.path.exists("TM_CommonCPP/"))
+            TM.GitAbsoluteCheckout("https://github.com/Troy1010/TM_CommonCPP.git", bQuiet=True)
+            self.assertTrue(os.path.exists("TM_CommonCPP/TM_CommonCPP.sln"))
 
     def test_CopyExclude(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
