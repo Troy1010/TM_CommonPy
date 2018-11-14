@@ -189,7 +189,7 @@ class Narrator:
             self.cReturningStrings.append("  <RecursionLvlReached>")
         else:
             for vKey,vValue in TM.COM.COMCollectionToDict(cCollection).items():
-                if self.vDuplicationGuard.IsDuplication(vValue) and bHideDuplications:
+                if self.vDuplicationGuard.IsDuplication(vValue) and self.bHideDuplications:
                     continue
                 self.cReturningStrings.append(self.__NL() + str(vKey) + ":")
                 self.Narrate(vValue)
