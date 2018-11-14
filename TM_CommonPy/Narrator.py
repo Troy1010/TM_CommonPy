@@ -151,6 +151,17 @@ class Narrator:
                 ,"Programs"
                 #,"DTE"
                 ,"DebuggedProcesses"
+                ,"ProjectGUID"
+                ,"References"
+                ,"ActiveConfiguration"
+                ,"VCReferences"
+                ,"ToolFiles"
+                ,"ProjectFile"
+                ,"Parent"
+                ,"Kind"
+                ,"ItemName"
+                ,"Configurations"
+                ,"UniqueName"
                 ]
         cMembers = {}
         for vKey in self.cCOMSearchMembers:
