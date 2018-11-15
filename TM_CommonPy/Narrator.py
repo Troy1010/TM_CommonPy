@@ -103,6 +103,9 @@ class Narrator:
             #---Collection
             elif isinstance(vVar,(dict,list,tuple)):
                 self.NarrateCollection(vVar)
+            #---Methods
+            elif str(type(vVar)) == "<class 'method'>":
+                self.cReturningStrings.append("<Method>")
             #---Everything else
             else:
                 self.NarrateObject(vVar)
@@ -162,6 +165,26 @@ class Narrator:
                 ,"ItemName"
                 ,"Configurations"
                 ,"UniqueName"
+                ,"Activate"
+                ,"Select"
+                ,"ActivePane"
+                ,"TextDocument"
+                ,"Selection"
+                ,"SelectAll"
+                ,"SelectLine"
+                ,"PageDown"
+                ,"PageUp"
+                ,"Caption"
+                ,"Document"
+                ,"ActivePane"
+                ,"SetSelectionContainer"
+                ,"SelectUp"
+                ,"SelectDown"
+                ,"GetItem"
+                ,"DoDefaultAction"
+                ,"UIHierarchyItems"
+                ,"SelectedItems"
+                ,"Solution"
                 ]
         cMembers = {}
         for vKey in self.cCOMSearchMembers:
