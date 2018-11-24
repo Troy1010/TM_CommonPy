@@ -185,6 +185,12 @@ class Narrator:
                 ,"UIHierarchyItems"
                 ,"SelectedItems"
                 ,"Solution"
+                ,"FullName"
+                ,"RelativePath"
+                ,"Value"
+                ,"ItemName"
+                ,"Save"
+                ,"SaveAs"
                 ]
         cMembers = {}
         for vKey in self.cCOMSearchMembers:
