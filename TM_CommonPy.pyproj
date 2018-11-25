@@ -80,10 +80,6 @@
     <Compile Include="TM_CommonPy\__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TM_CommonPy.egg-info\dependency_links.txt" />
-    <Content Include="TM_CommonPy.egg-info\requires.txt" />
-    <Content Include="TM_CommonPy.egg-info\SOURCES.txt" />
-    <Content Include="TM_CommonPy.egg-info\top_level.txt" />
     <Content Include="TM_CommonPy\_tests\res\Examples_Backup\conanbuildinfo.txt" />
     <Content Include="TM_CommonPy\_tests\res\Examples_Backup\conanbuildinfo_old.txt" />
     <Content Include="TM_CommonPy\_tests\res\Examples_Backup\ExampleTXT.txt" />
@@ -155,7 +151,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TM_CommonPy" />
-    <Folder Include="TM_CommonPy.egg-info" />
     <Folder Include="TM_CommonPy\COM" />
     <Folder Include="TM_CommonPy\conan" />
     <Folder Include="TM_CommonPy\git" />
