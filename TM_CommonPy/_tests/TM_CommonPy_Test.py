@@ -16,7 +16,7 @@ import TM_CommonPy.openpyxl
 import VisualStudioAutomation as VS
 import dill
 import importlib
-from TM_CommonPy.tests._Logger import TMLog_LogTests
+from TM_CommonPy._tests._Logger import TMLog_LogTests
 
 class Te5tObj():
     Name = "Te5tObject"

@@ -6,7 +6,7 @@ import TM_CommonPy as TM
 import os
 
 try:
-    TM.Run("python setup.py nosetests -x")
+    TM.Run("python setup.py nosetests --tests=TM_CommonPy._tests --stop --verbosity=1")
 except Exception as e:
     print(e)
     os.system('pause')
