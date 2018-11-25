@@ -28,21 +28,20 @@ class Te5tObj():
         print("Hiii I'm the Test Object")
 
 class Test_TM_CommonPy_SameFolder(unittest.TestCase):
-    sTestWorkspace = "TestWorkspace_SameFolder/"
+    sTestWorkspace = "_TestWorkspace_SameFolder/"
     @classmethod
     def setUpClass(self):
-        os.chdir(os.path.join('TM_CommonPy','tests'))
-        TM.Copy("res/Examples_Backup",self.sTestWorkspace,bPreDelete=True)
-        self.OldCWD = os.getcwd()
-        os.chdir(self.sTestWorkspace)
+        self.sOldCWD = os.getcwd()
+        os.chdir(os.path.dirname(__file__))
+        TM.Copy("res/Examples_Backup",self.sTestWorkspace,bPreDelete=True,bCDInto=True)
 
     @classmethod
     def tearDownClass(self):
-        os.chdir(self.OldCWD)
         global bPostDelete
         if bPostDelete:
+            os.chdir(os.path.dirname(__file__))
             TM.Delete(self.sTestWorkspace)
-        os.chdir(os.path.join('..','..'))
+        os.chdir(self.sOldCWD)
 
     #------Tests
     def test_Counter(self):
@@ -149,18 +148,19 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
         self.assertTrue(cNums == [345.54,4,547,3,5])
 
 class Test_TM_CommonPy(unittest.TestCase):
-    sTestWorkspace = "TestWorkspace/"
+    sTestWorkspace = "_TestWorkspace/"
     @classmethod
     def setUpClass(self):
-        os.chdir(os.path.join('TM_CommonPy','tests'))
+        self.sOldCWD = os.getcwd()
+        os.chdir(os.path.dirname(__file__))
         TM.Delete(self.sTestWorkspace)
 
     @classmethod
     def tearDownClass(self):
-        os.chdir(os.path.join('..','..'))
         global bPostDelete
         if bPostDelete:
             TM.Delete(self.sTestWorkspace)
+        os.chdir(self.sOldCWD)
 
     #------Tests
     def test_COM(self):

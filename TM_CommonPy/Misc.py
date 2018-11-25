@@ -90,7 +90,7 @@ def GetFullFileNames(sDir):
     return cFileNames
 
 
-def Copy(sSrc,sDstDir,bPreDelete=False,sExclude=""):
+def Copy(sSrc,sDstDir,bPreDelete=False,sExclude="",bCDInto=False):
     #---PreDelete
     if bPreDelete:
         Delete(sDstDir)
@@ -114,6 +114,10 @@ def Copy(sSrc,sDstDir,bPreDelete=False,sExclude=""):
             shutil.copy(sSrc, sDstDir)
     else:
         raise OSError("sSrc:"+sSrc+" is not a valid file or directory")
+    #---bCDInto
+    if bCDInto:
+        os.chdir(sDstDir)
+
 
 #alpha
 def IsEmpty(cCollection):
@@ -277,7 +281,6 @@ def TryGetCollectionAttrib(vObject,sAttribName):
 def MsgBox(sMsg,iStyle=1):
     return ctypes.windll.user32.MessageBoxW(0, sMsg, FnName(1), iStyle)
 
-#beta
 def FnName(iShift=0):
    return inspect.stack()[1+iShift][3]
 
