@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{81852731-c6e5-4efc-bde7-788bd10eecb5}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>Script_RunTests_Conditional.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Script_RunTests.py" />
+    <Compile Include="Script_RunTests_Conditional.py" />
+    <Compile Include="Script_UploadToPyPI.py" />
+    <Compile Include="setup.py" />
+    <Compile Include="TM_CommonPy\CommandSet.py" />
+    <Compile Include="TM_CommonPy\COM\Misc.py" />
+    <Compile Include="TM_CommonPy\COM\__init__.py" />
+    <Compile Include="TM_CommonPy\conan\Misc.py" />
+    <Compile Include="TM_CommonPy\conan\__init__.py" />
+    <Compile Include="TM_CommonPy\CopyContext.py" />
+    <Compile Include="TM_CommonPy\Counter.py" />
+    <Compile Include="TM_CommonPy\ElementTreeContext.py" />
+    <Compile Include="TM_CommonPy\git\Misc.py" />
+    <Compile Include="TM_CommonPy\git\__init__.py" />
+    <Compile Include="TM_CommonPy\Misc.py" />
+    <Compile Include="TM_CommonPy\Narrator.py" />
+    <Compile Include="TM_CommonPy\openpyxl\Misc.py" />
+    <Compile Include="TM_CommonPy\openpyxl\__init__.py" />
+    <Compile Include="TM_CommonPy\WorkspaceContext.py" />
+    <Compile Include="TM_CommonPy\_Logger.py" />
+    <Compile Include="TM_CommonPy\_tests\res\Examples_Backup\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\res\Examples_Backup\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\TM_CommonPy_Test.py" />
+    <Compile Include="TM_CommonPy\_tests\_Logger.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\TM_CommonCPP\packing\conanfile.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\ReturnAString.py" />
+    <Compile Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\Script_MkDir.py" />
+    <Compile Include="TM_CommonPy\_tests\__init__.py" />
+    <Compile Include="TM_CommonPy\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TM_CommonPy.egg-info\dependency_links.txt" />
+    <Content Include="TM_CommonPy.egg-info\requires.txt" />
+    <Content Include="TM_CommonPy.egg-info\SOURCES.txt" />
+    <Content Include="TM_CommonPy.egg-info\top_level.txt" />
+    <Content Include="TM_CommonPy\_tests\res\Examples_Backup\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\res\Examples_Backup\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\res\Examples_Backup\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\res\Examples_Backup\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\Folder1\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\conanbuildinfo.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\conanbuildinfo_old.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\ExampleTXT.txt" />
+    <Content Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\Folder1\ExampleTXT.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TM_CommonPy" />
+    <Folder Include="TM_CommonPy.egg-info" />
+    <Folder Include="TM_CommonPy\COM" />
+    <Folder Include="TM_CommonPy\conan" />
+    <Folder Include="TM_CommonPy\git" />
+    <Folder Include="TM_CommonPy\openpyxl" />
+    <Folder Include="TM_CommonPy\_tests" />
+    <Folder Include="TM_CommonPy\_tests\res\" />
+    <Folder Include="TM_CommonPy\_tests\res\Examples_Backup" />
+    <Folder Include="TM_CommonPy\_tests\res\Examples_Backup\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_COM" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet2\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet3\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_Save\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_SingleArg_Try\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CommandSet_ValueError\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_COM\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyExclude\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_CopyFunction\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\TM_CommonCPP\" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_GitAbsoluteCheckout\TM_CommonCPP\packing" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_GitPullOrClone\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_ImportFromDir\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_Run" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_RunPowershellScript_Try\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_Run\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace\test_TryMkdir\Folder1" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder" />
+    <Folder Include="TM_CommonPy\_tests\_TestWorkspace_SameFolder\Folder1" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>
