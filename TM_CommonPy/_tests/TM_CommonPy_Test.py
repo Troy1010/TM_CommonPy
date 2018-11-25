@@ -19,6 +19,9 @@ import importlib
 from TM_CommonPy._tests._Logger import TMLog_LogTests
 from nose.plugins.attrib import attr
 
+import requests
+import sortedcontainers
+
 vCounter = TM.Counter()
 
 class Te5tObj():
