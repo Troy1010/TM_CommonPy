@@ -1,5 +1,5 @@
 ##region Settings
-bPause = True
+bPause = False
 ##endregion
 
 import TM_CommonPy as TM
