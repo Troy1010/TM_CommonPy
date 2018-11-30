@@ -1,17 +1,4 @@
-import os, sys
-import importlib
-import pip
-import xml.etree.ElementTree
-import shutil
-import subprocess
-import shlex
-import stat
-import importlib
-import pkgutil
-import inspect
-import importlib.util
-import TM_CommonPy.Narrator
-import ctypes
+import os
 import TM_CommonPy as TM
 from TM_CommonPy._Logger import TMLog
 import pickle
@@ -24,7 +11,6 @@ from types import ModuleType
 class CommandSet_QueType(Enum):
     Function = 1
     Script = 2
-#beta
 class CommandSet:
     def __init__(self):
         self.PreviousCommandSet = []

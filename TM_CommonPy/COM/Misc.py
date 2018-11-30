@@ -1,4 +1,3 @@
-import win32com.client
 
 def COMCollectionToDict(cCOMCollection, bTry=True):
     cReturning = {}
@@ -27,7 +26,6 @@ def TryGetValue(vObj):
     try:
         if hasattr(vObj,"Value"): #This is known to throw an error for depreciated objects.
             return getattr(vObj,"Value")
-        else:
-            return "<None>"
+        return "<None>"
     except:
         return "<ValueError>"

@@ -2,25 +2,15 @@ import os
 ##region Settings
 bPostDelete = False
 ##endregion
-
 import unittest
-from nose.tools import *
-import os
-import shutil
-import sys
 import xml.etree.ElementTree
 import openpyxl
 
 import TM_CommonPy as TM
-import TM_CommonPy.openpyxl
 import VisualStudioAutomation as VS
 import dill
-import importlib
 from TM_CommonPy._tests._Logger import TMLog_LogTests
 from nose.plugins.attrib import attr
-
-import requests
-import sortedcontainers
 
 vCounter = TM.Counter()
 
@@ -110,7 +100,6 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_Narrate(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         TMLog_LogTests.info(TM.Narrate(True))
         self.assertTrue("True" in TM.Narrate(True))
         TMLog_LogTests.info(TM.Narrate(False))
@@ -126,7 +115,6 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_Narrate_Elem(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         vTree = xml.etree.ElementTree.parse('ExampleXML.xml')
         vRoot = vTree.getroot()
         TMLog_LogTests.info(TM.Narrate(vRoot,iRecursionThreshold=5))
@@ -134,33 +122,28 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_Narrate_Collection(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         cArray = [30,40,80,10]
         TMLog_LogTests.info(TM.Narrate(cArray))
         self.assertTrue("2:80" in TM.Narrate(cArray))
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_Narrate_UnknownObj(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         vObj = Te5tObj()
         TMLog_LogTests.info(TM.Narrate(vObj))
         self.assertTrue("Name:Te5tObject" in TM.Narrate(vObj))
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_Narrate_Proj(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
             TMLog_LogTests.info(TM.Narrate(vProjWrapper.vProj))
             self.assertTrue("Name:HelloWorld" in TM.Narrate(vProjWrapper.vProj))
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_GetRelFileNames(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         TMLog_LogTests.info(TM.Narrate(TM.GetRelFileNames(".")))
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_ListFiles(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         TMLog_LogTests.info(TM.ListFiles("."))
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
@@ -192,7 +175,6 @@ class Test_TM_CommonPy(unittest.TestCase):
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_COM(self):
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
-            TMLog_LogTests.info("\n\n-------"+TM.FnName())
             with VS.DTEWrapper() as vDTEWrapper, vDTEWrapper.OpenProj("HelloWorld.vcxproj") as vProjWrapper:
                 cProjFiles = TM.COM.COMCollectionToDict(vProjWrapper.vProj.Object.Files)
                 TMLog_LogTests.info(TM.Narrate(cProjFiles))
@@ -349,7 +331,6 @@ class Test_TM_CommonPy(unittest.TestCase):
 
     @attr(**{'count':vCounter(),__name__.rsplit(".",1)[-1]:True})
     def test_ImportFromDir(self):
-        TMLog_LogTests.info("\n\n-------"+TM.FnName())
         with TM.WorkspaceContext(self.sTestWorkspace+TM.FnName(),sSource="res/Examples_Backup",bPostDelete=False,bCDInto=True):
             vModule = TM.ImportFromDir("ReturnAString.py")
             TMLog_LogTests.info(vModule.FnReturnAString())

@@ -4,8 +4,7 @@ import openpyxl
 def GetMaxCol(vSheet):
     if IsEmptySheet(vSheet):
         return 0
-    else:
-        return len(vSheet['1'])
+    return len(vSheet['1'])
 
 def IsEmptySheet(vSheet):
     for cRows in vSheet.iter_rows():

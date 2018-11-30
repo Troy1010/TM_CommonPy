@@ -1,10 +1,6 @@
-import os, sys
-import importlib
-import pip
+
 import xml.etree.ElementTree
-import shutil
 import TM_CommonPy as TM
-import collections
 import numbers
 from TM_CommonPy._Logger import TMLog
 
@@ -84,7 +80,7 @@ class Narrator:
                 self.cReturningStrings.append("<Duplication>")
             else:
                 self.cReturningStrings.append("<Duplication of "+sName+">")
-            return
+            return None
         ##endregion
         with self.vRecursionContext:
             #-------Pass to another Narrate command depending on type

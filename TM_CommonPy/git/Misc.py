@@ -1,11 +1,9 @@
 import os
 import TM_CommonPy as TM
 
-#dev
 def GetGitTitleFromURL(sURL):
     return sURL[sURL.rfind("/")+1:sURL.rfind(".git")]
 
-#dev
 def PullOrClone(sURL,bCDInto=False,bQuiet=False):
     #---Open
     sCWD = os.getcwd()
@@ -33,7 +31,6 @@ def PullOrClone(sURL,bCDInto=False,bQuiet=False):
     #---Close
     os.chdir(sCWD)
 
-#dev
 def FullClean(bStash = False, bQuiet=False):
     if bStash:
         if bQuiet:
@@ -48,11 +45,9 @@ def FullClean(bStash = False, bQuiet=False):
             TM.Run("git clean -f")
             TM.Run("git reset --hard")
 
-#dev
 def AbsoluteCheckout(sURL,sBranch="",bQuiet=False):
     #---Open
     sCWD = os.getcwd()
-    sName = GetGitTitleFromURL(sURL)
     #---Get .git
     PullOrClone(sURL,bCDInto=True,bQuiet=bQuiet)
     #---Clean

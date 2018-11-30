@@ -1,27 +1,22 @@
 import os, sys
 import importlib
+import importlib.util
 import pip
 import xml.etree.ElementTree
 import shutil
 import subprocess
 import shlex
 import stat
-import importlib
 import pkgutil
 import inspect
-import importlib.util
-import TM_CommonPy.Narrator
 import ctypes
 import types
-from TM_CommonPy._Logger import TMLog
-import TM_CommonPy as TM
 import traceback
+from TM_CommonPy._Logger import TMLog
 
-#dev
 def RemoveWhitespace(s):
     return "".join(s.split())
 
-#dev
 def GetNumsInString(sString):
     cNums = []
     sNum = ""
@@ -35,12 +30,10 @@ def GetNumsInString(sString):
         cNums.append(float(sNum))
     return cNums
 
-#dev
 def DisplayDone():
     print("\n\t\t\tDone\n")
     os.system('pause')
 
-#dev
 def DisplayException(e):
     print("====================================================================")
     print("Traceback (most recent call last):")
@@ -48,14 +41,12 @@ def DisplayException(e):
     print(type(e).__name__ + ": " + str(e))
     os.system('pause')
 
-#beta
 def TryMkdir(sPath):
     try:
         os.mkdir(sPath)
     except FileExistsError:
         pass
 
-#beta
 #Maybe use __file__ instead?
 def GetScriptRoot():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -118,8 +109,6 @@ def Copy(sSrc,sDstDir,bPreDelete=False,sExclude="",bCDInto=False):
     if bCDInto:
         os.chdir(sDstDir)
 
-
-#alpha
 def IsEmpty(cCollection):
     #---None
     if cCollection is None:
@@ -128,17 +117,13 @@ def IsEmpty(cCollection):
     if isinstance(cCollection,dict):
         cCollection = cCollection.items()
     #---NotACollection
-    try:
-        for vKey,vValue in cCollection:
-            pass
-    except:
+    if not IsCollection(cCollection):
         return True
     #---Empty
     if len(cCollection) ==0:
         return True
+    return False
 
-
-#beta
 def FindElem(vElemToFind,vTreeToSearch):
     for vElem in vTreeToSearch.iter():
         bFound = True
@@ -162,20 +147,17 @@ def FindElem(vElemToFind,vTreeToSearch):
         if bFound:
             return vElem
     #-Couldn't find
-    return
+    return None
 
-#dev
 def AppendElemIfAbsent(vElemToAppend,vElemToAppendTo):
     if FindElem(vElemToAppend,vElemToAppendTo) is None:
         vElemToAppendTo.append(vElemToAppend)
 
-#dev
 def RemoveElem(vElemToRemoveTemplate,vElemToRemoveFrom):
     vElemToRemove = FindElem(vElemToRemoveTemplate,vElemToRemoveFrom)
     if not vElemToRemove is None:
         vElemToRemoveFrom.remove(vElemToRemove)
 
-#dev
 def IsCollection(vVar):
     """Does not include strings as a collection"""
     try:
@@ -186,20 +168,17 @@ def IsCollection(vVar):
         bCanIter = True
     return bCanIter and not isinstance(vVar,str)
 
-#dev
 def RunPowerShellScript(sScriptFile):
     vProcess = subprocess.Popen(["powershell.exe","-executionpolicy ","bypass","-file",sScriptFile], shell=True)
     vProcess.communicate()
     return vProcess
 
-#dev
 #Currently, passing a string to subprocess.run will fail on linux (if shell=false) because lunix believes the first item is a param.
 #To get around this, this function uses shlex to split the string  and pass it as a collection instead.
 #More info here:https://codecalamity.com/run-subprocess-run/#arguments-as-string-or-list
 def Run(sToRun):
     subprocess.run(shlex.split(sToRun,posix=False))
 
-#dev
 def Delete(sFilePathOrDir):
     if os.path.isdir(sFilePathOrDir):
         #-Change mode of all files to Write
@@ -211,11 +190,11 @@ def Delete(sFilePathOrDir):
     elif os.path.exists(sFilePathOrDir):
         os.remove(sFilePathOrDir)
 
-#dev
 def MakeDir(sDir, bCDInto=False):
     if not os.path.exists(sDir):
         os.makedirs(sDir)
-    os.chdir(sDir)
+    if bCDInto:
+        os.chdir(sDir)
 
 def ListFiles(sDir):
     sReturning = ""
@@ -228,10 +207,9 @@ def ListFiles(sDir):
             sReturning += "\n"+ '{}{}'.format(subindent, f)
     return sReturning
 
-#dev
-class fragile(object):
+class fragile():
     class Break(Exception):
-      """Break out of the with statement"""
+        """Break out of the with statement"""
 
     def __init__(self, value):
         self.value = value
@@ -244,7 +222,7 @@ class fragile(object):
         if etype == self.Break:
             return True
         return error
-#dev
+
 #This function allows you to import a file witout poluting sys.path
 def ImportFromDir(sFilePath):
     #---Determine sModuleName
@@ -261,7 +239,6 @@ def ImportFromDir(sFilePath):
     #---
     return vModule
 
-#dev
 def InstallAndImport(package):
     try:
         importlib.import_module(package)
@@ -270,21 +247,17 @@ def InstallAndImport(package):
     finally:
         globals()[package] = importlib.import_module(package)
 
-#dev
 def TryGetCollectionAttrib(vObject,sAttribName):
     if hasattr(vObject,sAttribName):
         return getattr(vObject,sAttribName)
-    else:
-        return []
+    return []
 
-#dev
 def MsgBox(sMsg,iStyle=1):
     return ctypes.windll.user32.MessageBoxW(0, sMsg, FnName(1), iStyle)
 
 def FnName(iShift=0):
-   return inspect.stack()[1+iShift][3]
+    return inspect.stack()[1+iShift][3]
 
-#dev
 def IsTextInFile(sText,sFilePath):
     try:
         with open(sFilePath, 'r') as vFile:
@@ -293,7 +266,6 @@ def IsTextInFile(sText,sFilePath):
         with open(sFilePath, 'rb') as vFile:
             return sText in "".join(map(chr, vFile.read()))
 
-#dev
 def ImportSubmodules(package, recursive=True):
     """ Import all submodules of a module, recursively, including subpackages
 
@@ -311,6 +283,5 @@ def ImportSubmodules(package, recursive=True):
             results.update(ImportSubmodules(full_name))
     return results
 
-#beta
 def CopyFunction(vFunction):
     return types.FunctionType(vFunction.__code__, vFunction.__globals__, vFunction.__name__, vFunction.__defaults__, vFunction.__closure__)
