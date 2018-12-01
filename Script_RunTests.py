@@ -1,12 +1,12 @@
-##region Settings
-bPause = False
-##endregion
-
-import TM_CommonPy as TM
 import os
+import subprocess
+# Settings
+bPause = True
+
 
 try:
-    TM.Run("python setup.py nosetests --tests=TM_CommonPy._tests --stop --verbosity=1")
+    subprocess.run(['python', 'setup.py', 'nosetests', '--tests',
+                    'TM_CommonPy._tests', '--stop', '--verbosity=1', ])
 except Exception as e:
     print(e)
     os.system('pause')
