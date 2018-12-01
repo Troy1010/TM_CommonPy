@@ -1,7 +1,7 @@
 import os
 import subprocess
 # Settings
-bPause = True
+bPause = False
 
 
 try:
