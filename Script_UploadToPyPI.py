@@ -1,9 +1,8 @@
-##region Settings
-bPause = True
-##endregion
-
-import TM_CommonPy as TM
 import os
+import TM_CommonPy as TM
+# Settings
+bPause = True
+
 
 try:
     TM.Delete("build")
