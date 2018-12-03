@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 import importlib
 import importlib.util
 import pip
@@ -14,8 +15,10 @@ import types
 import traceback
 from TM_CommonPy._Logger import TMLog
 
+
 def RemoveWhitespace(s):
     return "".join(s.split())
+
 
 def GetNumsInString(sString):
     cNums = []
@@ -26,13 +29,15 @@ def GetNumsInString(sString):
         elif sNum:
             cNums.append(float(sNum))
             sNum = ""
-    if sNum: #Just in case the string ended at a num.
+    if sNum:  # Just in case the string ended at a num.
         cNums.append(float(sNum))
     return cNums
+
 
 def DisplayDone():
     print("\n\t\t\tDone\n")
     os.system('pause')
+
 
 def DisplayException(e):
     print("====================================================================")
@@ -41,21 +46,26 @@ def DisplayException(e):
     print(type(e).__name__ + ": " + str(e))
     os.system('pause')
 
+
 def TryMkdir(sPath):
     try:
         os.mkdir(sPath)
     except FileExistsError:
         pass
 
-#Maybe use __file__ instead?
+# Maybe use __file__ instead?
+
+
 def GetScriptRoot():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
+
 def GetFileContent(sFilePath):
-    vFile = open(sFilePath,'r')
+    vFile = open(sFilePath, 'r')
     sContent = vFile.read()
     vFile.close()
     return sContent
+
 
 def GetXMLNamespaces(sXMLFile):
     cNamespaces = dict([
@@ -65,13 +75,15 @@ def GetXMLNamespaces(sXMLFile):
     ])
     return cNamespaces
 
+
 def GetRelFileNames(sDir):
     cFileNames = []
     for root, dirs, files in os.walk(sDir):
         sRelPath = root.replace(sDir, '')
         for f in files:
-            cFileNames.append(os.path.join(sRelPath,f))
+            cFileNames.append(os.path.join(sRelPath, f))
     return cFileNames
+
 
 def GetFullFileNames(sDir):
     cFileNames = []
@@ -81,11 +93,11 @@ def GetFullFileNames(sDir):
     return cFileNames
 
 
-def Copy(sSrc,sDstDir,bPreDelete=False,sExclude="",bCDInto=False):
-    #---PreDelete
+def Copy(sSrc, sDstDir, bPreDelete=False, sExclude="", bCDInto=False):
+    # ---PreDelete
     if bPreDelete:
         Delete(sDstDir)
-    #---Dir
+    # ---Dir
     if os.path.isdir(sSrc):
         for sRoot, cDirs, cFiles in os.walk(sSrc):
             dst_dir = sRoot.replace(sSrc, sDstDir, 1)
@@ -99,64 +111,69 @@ def Copy(sSrc,sDstDir,bPreDelete=False,sExclude="",bCDInto=False):
                     os.remove(dst_file)
                 if not (sExclude != "" and sExclude in src_file):
                     shutil.copy(src_file, dst_dir)
-    #---File
+    # ---File
     elif os.path.isfile(sSrc):
         if not (sExclude != "" and sExclude in sSrc):
             shutil.copy(sSrc, sDstDir)
     else:
         raise OSError("sSrc:"+sSrc+" is not a valid file or directory")
-    #---bCDInto
+    # ---bCDInto
     if bCDInto:
         os.chdir(sDstDir)
 
+
 def IsEmpty(cCollection):
-    #---None
+    # ---None
     if cCollection is None:
         return True
-    #---Dict
-    if isinstance(cCollection,dict):
+    # ---Dict
+    if isinstance(cCollection, dict):
         cCollection = cCollection.items()
-    #---NotACollection
+    # ---NotACollection
     if not IsCollection(cCollection):
         return True
-    #---Empty
-    if len(cCollection) ==0:
+    # ---Empty
+    if len(cCollection) == 0:
         return True
     return False
 
-def FindElem(vElemToFind,vTreeToSearch):
+
+def FindElem(vElemToFind, vTreeToSearch):
     for vElem in vTreeToSearch.iter():
         bFound = True
-        #-tag or text differences?
+        # -tag or text differences?
         if not (vElemToFind.tag in vElem.tag and ((vElemToFind.text == vElem.text) or (vElemToFind.text is None))):
             bFound = False
             continue
-        #-attrib differences?
-        for vKey,vValue in vElemToFind.attrib.items():
+        # -attrib differences?
+        for vKey, vValue in vElemToFind.attrib.items():
             if not ((vKey in vElem.attrib) and (vElem.attrib[vKey] == vValue)):
                 bFound = False
                 break
         if not bFound:
             continue
-        #-child differences?
+        # -child differences?
         for vElemToFindChild in vElemToFind:
-            if FindElem(vElemToFindChild,vElem) is None:
+            if FindElem(vElemToFindChild, vElem) is None:
                 bFound = False
                 break
-        #-If there are still no differences, we found it. Return the element
+        # -If there are still no differences, we found it. Return the element
         if bFound:
             return vElem
-    #-Couldn't find
+    # -Couldn't find
     return None
 
-def AppendElemIfAbsent(vElemToAppend,vElemToAppendTo):
-    if FindElem(vElemToAppend,vElemToAppendTo) is None:
+
+def AppendElemIfAbsent(vElemToAppend, vElemToAppendTo):
+    if FindElem(vElemToAppend, vElemToAppendTo) is None:
         vElemToAppendTo.append(vElemToAppend)
 
-def RemoveElem(vElemToRemoveTemplate,vElemToRemoveFrom):
-    vElemToRemove = FindElem(vElemToRemoveTemplate,vElemToRemoveFrom)
+
+def RemoveElem(vElemToRemoveTemplate, vElemToRemoveFrom):
+    vElemToRemove = FindElem(vElemToRemoveTemplate, vElemToRemoveFrom)
     if not vElemToRemove is None:
         vElemToRemoveFrom.remove(vElemToRemove)
+
 
 def IsCollection(vVar):
     """Does not include strings as a collection"""
@@ -166,29 +183,35 @@ def IsCollection(vVar):
         bCanIter = False
     else:
         bCanIter = True
-    return bCanIter and not isinstance(vVar,str)
+    return bCanIter and not isinstance(vVar, str)
+
 
 def RunPowerShellScript(sScriptFile):
-    vProcess = subprocess.Popen(["powershell.exe","-executionpolicy ","bypass","-file",sScriptFile], shell=True)
+    vProcess = subprocess.Popen(
+        ["powershell.exe", "-executionpolicy ", "bypass", "-file", sScriptFile], shell=True)
     vProcess.communicate()
     return vProcess
 
-#Currently, passing a string to subprocess.run will fail on linux (if shell=false) because lunix believes the first item is a param.
-#To get around this, this function uses shlex to split the string  and pass it as a collection instead.
-#More info here:https://codecalamity.com/run-subprocess-run/#arguments-as-string-or-list
+# Currently, passing a string to subprocess.run will fail on linux (if shell=false) because lunix believes the first item is a param.
+# To get around this, this function uses shlex to split the string  and pass it as a collection instead.
+# More info here:https://codecalamity.com/run-subprocess-run/#arguments-as-string-or-list
+
+
 def Run(sToRun):
-    subprocess.run(shlex.split(sToRun,posix=False))
+    subprocess.run(shlex.split(sToRun, posix=False))
+
 
 def Delete(sFilePathOrDir):
     if os.path.isdir(sFilePathOrDir):
-        #-Change mode of all files to Write
+        # -Change mode of all files to Write
         for root, dirs, files in os.walk(sFilePathOrDir):
             for sFilePath in files:
-                os.chmod(os.path.join(root,sFilePath), stat.S_IWRITE)
-        #-
+                os.chmod(os.path.join(root, sFilePath), stat.S_IWRITE)
+        # -
         shutil.rmtree(sFilePathOrDir)
     elif os.path.exists(sFilePathOrDir):
         os.remove(sFilePathOrDir)
+
 
 def MakeDir(sDir, bCDInto=False):
     if not os.path.exists(sDir):
@@ -196,16 +219,18 @@ def MakeDir(sDir, bCDInto=False):
     if bCDInto:
         os.chdir(sDir)
 
+
 def ListFiles(sDir):
     sReturning = ""
     for root, dirs, files in os.walk(sDir):
         level = root.replace(sDir, '').count(os.sep)
         indent = ' ' * 4 * (level)
-        sReturning += "\n"+ '{}{}/'.format(indent, os.path.basename(root))
+        sReturning += "\n" + '{}{}/'.format(indent, os.path.basename(root))
         subindent = ' ' * 4 * (level + 1)
         for f in files:
-            sReturning += "\n"+ '{}{}'.format(subindent, f)
+            sReturning += "\n" + '{}{}'.format(subindent, f)
     return sReturning
+
 
 class fragile():
     class Break(Exception):
@@ -223,21 +248,25 @@ class fragile():
             return True
         return error
 
-#This function allows you to import a file witout poluting sys.path
+# This function allows you to import a file witout poluting sys.path
+
+
 def ImportFromDir(sFilePath):
-    #---Determine sModuleName
+    # ---Determine sModuleName
     sModuleName = os.path.split(sFilePath)[1]
     if sModuleName[-3:] == ".py":
         sModuleName = sModuleName[:-3]
-    #---Get vModule
+    # ---Get vModule
     vSpec = importlib.util.spec_from_file_location(sModuleName, sFilePath)
     if vSpec is None:
-        raise ValueError("ImportFromDir`Could not retrieve spec. \nsModuleName:"+sModuleName+"\nsFilePath:"+sFilePath+"\nCurrentWorkingDir:"+os.getcwd())
+        raise ValueError("ImportFromDir`Could not retrieve spec. \nsModuleName:" +
+                         sModuleName+"\nsFilePath:"+sFilePath+"\nCurrentWorkingDir:"+os.getcwd())
     vModule = importlib.util.module_from_spec(vSpec)
-    #---Execute vModule
+    # ---Execute vModule
     vSpec.loader.exec_module(vModule)
-    #---
+    # ---
     return vModule
+
 
 def InstallAndImport(package):
     try:
@@ -247,24 +276,29 @@ def InstallAndImport(package):
     finally:
         globals()[package] = importlib.import_module(package)
 
-def TryGetCollectionAttrib(vObject,sAttribName):
-    if hasattr(vObject,sAttribName):
-        return getattr(vObject,sAttribName)
+
+def TryGetCollectionAttrib(vObject, sAttribName):
+    if hasattr(vObject, sAttribName):
+        return getattr(vObject, sAttribName)
     return []
 
-def MsgBox(sMsg,iStyle=1):
+
+def MsgBox(sMsg, iStyle=1):
     return ctypes.windll.user32.MessageBoxW(0, sMsg, FnName(1), iStyle)
+
 
 def FnName(iShift=0):
     return inspect.stack()[1+iShift][3]
 
-def IsTextInFile(sText,sFilePath):
+
+def IsTextInFile(sText, sFilePath):
     try:
         with open(sFilePath, 'r') as vFile:
             return sText in vFile.read()
     except UnicodeDecodeError:
         with open(sFilePath, 'rb') as vFile:
             return sText in "".join(map(chr, vFile.read()))
+
 
 def ImportSubmodules(package, recursive=True):
     """ Import all submodules of a module, recursively, including subpackages
@@ -282,6 +316,7 @@ def ImportSubmodules(package, recursive=True):
         if recursive and is_pkg:
             results.update(ImportSubmodules(full_name))
     return results
+
 
 def CopyFunction(vFunction):
     return types.FunctionType(vFunction.__code__, vFunction.__globals__, vFunction.__name__, vFunction.__defaults__, vFunction.__closure__)
