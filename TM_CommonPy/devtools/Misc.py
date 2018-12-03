@@ -1,5 +1,6 @@
 import subprocess
 import TM_CommonPy as TM
+import sys
 # Settings
 bPause = False
 
@@ -11,6 +12,7 @@ def RunTests(sTestPath=".", sEval="True", iVerbosity=1, bPause=False):
                         '--eval-attr', sEval])
     except Exception as e:
         TM.DisplayException(e)
+        sys.exit(1)
     if bPause:
         TM.DisplayDone()
 
@@ -23,5 +25,6 @@ def UploadToPyPI(bPause=False):
         TM.Run("twine upload dist/*")
     except Exception as e:
         TM.DisplayException(e)
+        sys.exit(1)
     if bPause:
         TM.DisplayDone()
