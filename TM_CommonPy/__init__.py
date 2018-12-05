@@ -10,7 +10,6 @@ from .Narrator import Narrate
 from .ElementTreeContext import ElementTreeContext
 from .WorkspaceContext import WorkspaceContext
 from .Counter import Counter
-from .CopyContext import CopyContext
 from .CommandSet import CommandSet
 from .LoggingHeaderDecorator import LoggingHeaderDecorator
 from .Misc import *
