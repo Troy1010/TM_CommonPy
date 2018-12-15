@@ -1,32 +1,32 @@
-import os, logging
-##region Settings
+import os
+import logging
+import TM_CommonPy as TM
+# Settings
 bWriteLogFile = True
-sLogFile = os.path.join(__file__,'..','TMLog_LogTests.log')
+sLogFile = os.path.join(__file__, '..', 'TMLog_LogTests.log')
 vMasterThreshold = logging.DEBUG
 vConsoleHandlerThreshold = logging.WARNING
 vFileHandlerThreshold = logging.DEBUG
-##endregion
-import TM_CommonPy as TM
 
 TMLog_LogTests = logging.getLogger(__name__)
 TMLog_LogTests.info = TM.LoggingHeaderDecorator(TMLog_LogTests.info)
 TMLog_LogTests.debug = TM.LoggingHeaderDecorator(TMLog_LogTests.debug)
 TMLog_LogTests.setLevel(vMasterThreshold)
 vFormatter = logging.Formatter('%(message)s')
-#---ConsoleHandler
+# ---ConsoleHandler
 vConsoleHandler = logging.StreamHandler()
 vConsoleHandler.setLevel(vConsoleHandlerThreshold)
 vConsoleHandler.setFormatter(vFormatter)
 TMLog_LogTests.addHandler(vConsoleHandler)
-#---FileHandler
+# ---FileHandler
 try:
     os.remove(sLogFile)
-except (PermissionError,FileNotFoundError):
+except (PermissionError, FileNotFoundError):
     pass
 if bWriteLogFile:
     bLogFileIsOpen = False
     try:
-        os.rename(sLogFile,sLogFile)
+        os.rename(sLogFile, sLogFile)
     except PermissionError:
         bLogFileIsOpen = True
     except FileNotFoundError:
