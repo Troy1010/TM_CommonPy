@@ -1,21 +1,20 @@
 import os
 import logging
-import TM_CommonPy as TM
 # Settings
 bWriteLogFile = True
-sLogFile = os.path.join(__file__, '..', 'TMLog.log')
+sLogFile = os.path.join(__file__, '..', 'TMLog_TestLog.log')
 vMasterThreshold = logging.DEBUG
 vConsoleHandlerThreshold = logging.WARNING
 vFileHandlerThreshold = logging.DEBUG
 
-TMLog = logging.getLogger(__name__)
-TMLog.setLevel(vMasterThreshold)
-vFormatter = logging.Formatter('%(levelname)-7s %(message)s')
+TMLog_TestLog = logging.getLogger(__name__)
+TMLog_TestLog.setLevel(vMasterThreshold)
+vFormatter = logging.Formatter('%(message)s')
 # ---ConsoleHandler
 vConsoleHandler = logging.StreamHandler()
 vConsoleHandler.setLevel(vConsoleHandlerThreshold)
 vConsoleHandler.setFormatter(vFormatter)
-TMLog.addHandler(vConsoleHandler)
+TMLog_TestLog.addHandler(vConsoleHandler)
 # ---FileHandler
 try:
     os.remove(sLogFile)
@@ -33,4 +32,4 @@ if bWriteLogFile:
         vFileHandler = logging.FileHandler(sLogFile)
         vFileHandler.setFormatter(vFormatter)
         vFileHandler.setLevel(vFileHandlerThreshold)
-        TMLog.addHandler(vFileHandler)
+        TMLog_TestLog.addHandler(vFileHandler)

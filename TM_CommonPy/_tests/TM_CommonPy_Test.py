@@ -9,6 +9,7 @@ import dill
 from TM_CommonPy._tests._Logger import TMLog_LogTests
 from nose.plugins.attrib import attr
 from TM_CommonPy._Logger import TMLog
+from TM_CommonPy._Logger2 import TMLog_TestLog
 # Settings
 bPostDelete = False
 
@@ -45,6 +46,7 @@ class Test_TM_CommonPy_SameFolder(unittest.TestCase):
     # ------Tests
     @attr(**{'count': vCounter(), __name__.rsplit(".", 1)[-1]: True})
     def test_tk_Hello(self):
+        TMLog_TestLog.debug("wooo")
         TMLog_LogTests.debug("weee")
         TMLog.debug("boop")
         TM.Hello()
