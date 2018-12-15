@@ -1,0 +1,3 @@
+
+VERTICLE = "verticle"
+HORIZONAL = "horizonal"

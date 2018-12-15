@@ -13,7 +13,16 @@ import inspect
 import ctypes
 import types
 import traceback
-from TM_CommonPy._Logger import TMLog
+from TM_CommonPy._Logger import TMLog  # noqa
+
+
+def Hello():
+    print("running Hello")
+    TMLog.debug("Hello")
+
+
+def Ceil(value, ndigits=0):
+    return round(value*10**ndigits + 0.5)/10**ndigits
 
 
 def RemoveWhitespace(s):
@@ -171,7 +180,7 @@ def AppendElemIfAbsent(vElemToAppend, vElemToAppendTo):
 
 def RemoveElem(vElemToRemoveTemplate, vElemToRemoveFrom):
     vElemToRemove = FindElem(vElemToRemoveTemplate, vElemToRemoveFrom)
-    if not vElemToRemove is None:
+    if vElemToRemove is not None:
         vElemToRemoveFrom.remove(vElemToRemove)
 
 
@@ -259,8 +268,8 @@ def ImportFromDir(sFilePath):
     # ---Get vModule
     vSpec = importlib.util.spec_from_file_location(sModuleName, sFilePath)
     if vSpec is None:
-        raise ValueError("ImportFromDir`Could not retrieve spec. \nsModuleName:" +
-                         sModuleName+"\nsFilePath:"+sFilePath+"\nCurrentWorkingDir:"+os.getcwd())
+        raise ValueError("ImportFromDir`Could not retrieve spec. \nsModuleName:"
+                         + sModuleName+"\nsFilePath:"+sFilePath+"\nCurrentWorkingDir:"+os.getcwd())
     vModule = importlib.util.module_from_spec(vSpec)
     # ---Execute vModule
     vSpec.loader.exec_module(vModule)
