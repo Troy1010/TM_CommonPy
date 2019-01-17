@@ -1,6 +1,5 @@
 import tkinter as tk
 from . import Constants
-from TM_CommonPy._Logger import TMLog
 
 
 class TableFrame(tk.Frame):
@@ -10,13 +9,29 @@ class TableFrame(tk.Frame):
         except IndexError:
             return None
 
+    def GetMaxColumn(self):
+        iMaxCol = 0
+        for w in self.winfo_children():
+            if iMaxCol < w.grid_info()['column']:
+                iMaxCol = w.grid_info()['column']
+        return iMaxCol
+
+    def GetMaxRow(self):
+        iMaxRow = 0
+        for w in self.winfo_children():
+            if iMaxRow < w.grid_info()['row']:
+                iMaxRow = w.grid_info()['row']
+        return iMaxRow
+
     def FocusNextWritableCell(self, cellToSearchFrom=None, searchDirection=Constants.HORIZONAL):
+        # Determine firstRow, firstCol
         if cellToSearchFrom:
             firstRow = cellToSearchFrom.row
             firstCol = cellToSearchFrom.column
         else:
-            firstRow = cellToSearchFrom.row
-            firstCol = cellToSearchFrom.column
+            firstRow = 0
+            firstCol = 0
+        # Determine curCol, curRow
         if searchDirection == Constants.HORIZONAL:
             curCol = firstCol + 1
             curRow = firstRow
@@ -24,31 +39,33 @@ class TableFrame(tk.Frame):
             curCol = firstCol
             curRow = firstRow + 1
 
+        # Search
+        iMaxColumn = self.GetMaxColumn()
+        iMaxRow = self.GetMaxRow()
         while not (curCol == firstCol and curRow == firstRow):
             cell = self.GetCell(curRow, curCol)
-            if "entry" in str(type(cell)).lower() and cell.cget('state') == tk.NORMAL:
+            # Is this cell writable
+            if cell and "entry" in str(type(cell)).lower() and cell.cget('state') == tk.NORMAL:
                 cell.focus_set()
                 return
+            #
             if searchDirection == Constants.HORIZONAL:
-                if self.GetCell(curRow, curCol + 1):
+                if curCol < iMaxColumn:
                     curCol += 1
-                elif self.GetCell(curRow + 1, 0):
+                elif curRow < iMaxRow:
                     curCol = 0
                     curRow += 1
-                elif self.GetCell(0, 0):
+                else:
                     curCol = 0
                     curRow = 0
-                else:
-                    break
             else:
-                if self.GetCell(curRow + 1, curCol):
+                if curRow < iMaxRow:
                     curRow += 1
-                elif self.GetCell(0, curCol + 1):
+                elif curCol < iMaxColumn:
                     curCol += 1
                     curRow = 0
-                elif self.GetCell(0, 0):
+                else:
                     curCol = 0
                     curRow = 0
-                else:
-                    break
+        # Focus nothing
         self.winfo_toplevel().focus_set()
