@@ -23,6 +23,9 @@ class TableFrame(tk.Frame):
                 iMaxRow = w.grid_info()['row']
         return iMaxRow
 
+    def FocusNothing(self):
+        self.winfo_toplevel().focus_set()
+
     def FocusNextWritableCell(self, cellToSearchFrom=None, searchDirection=Constants.HORIZONAL):
         # Determine firstRow, firstCol
         if cellToSearchFrom:
