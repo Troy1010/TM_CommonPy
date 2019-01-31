@@ -12,6 +12,8 @@ class TableFrame(tk.Frame):
     def GetMaxColumn(self):
         iMaxCol = 0
         for w in self.winfo_children():
+            if 'column' not in w.grid_info():
+                continue
             if iMaxCol < w.grid_info()['column']:
                 iMaxCol = w.grid_info()['column']
         return iMaxCol
@@ -19,9 +21,24 @@ class TableFrame(tk.Frame):
     def GetMaxRow(self):
         iMaxRow = 0
         for w in self.winfo_children():
+            if 'row' not in w.grid_info():
+                continue
             if iMaxRow < w.grid_info()['row']:
                 iMaxRow = w.grid_info()['row']
         return iMaxRow
+
+    def InsertRow(self, row):
+        for w in self.winfo_children():
+            if 'row' not in w.grid_info():
+                continue
+            if row <= w.grid_info()['row']:
+                w.grid_configure(row=w.grid_info()['row']+1)
+
+    def IsRowEmpty(self, row):
+        try:
+            return self.grid_slaves(row)[0] is None
+        except IndexError:
+            return True
 
     def FocusNothing(self):
         self.winfo_toplevel().focus_set()
