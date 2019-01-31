@@ -27,9 +27,9 @@ class Entry(Cell_Inheritable, tk.Entry):
         state = self["state"]
         self.configure(state='normal')
         self.delete(0, tk.END)
+        if self.ValidationHandler is not None:
+            value = self.ValidationHandler(value)
         if value is not None:
-            if self.ValidationHandler is not None:
-                value = self.ValidationHandler(value)
             self.insert(0, value)
         self.configure(state=state)
 
