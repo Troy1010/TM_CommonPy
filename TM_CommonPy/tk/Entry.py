@@ -36,7 +36,7 @@ class Entry(tk.Entry):
         state = self["state"]
         self.configure(state='normal')
         self.delete(0, tk.END)
-        if value:
+        if value is not None:
             if self.ValidationHandler is not None:
                 value = self.ValidationHandler(value)
             self.insert(0, value)
