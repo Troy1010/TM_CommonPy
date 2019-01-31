@@ -1,8 +1,10 @@
+
+
 class Cell_Inheritable():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cDisposables = []
-        self.ValidationHandler = None
+        self._ValidationHandler = None
 
     def MakeValid(self):
         """ Useful if text is changed outside of its setter """
@@ -15,6 +17,15 @@ class Cell_Inheritable():
         for disposable in self.cDisposables:
             disposable.dispose()
         super().destroy()
+
+    @property
+    def ValidationHandler(self):
+        return self._ValidationHandler
+
+    @ValidationHandler.setter
+    def ValidationHandler(self, value):
+        self._ValidationHandler = value
+        self.MakeValid()
 
     @property
     def column(self):
