@@ -3,7 +3,7 @@ from .Cell_Inheritable import Cell_Inheritable
 import rx
 
 
-class Entry(Cell_Inheritable, tk.Entry):
+class Button(Cell_Inheritable, tk.Button):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -13,7 +13,7 @@ class Entry(Cell_Inheritable, tk.Entry):
 
     @property
     def text(self):
-        return self.get()
+        return self['text']
 
     @text.setter
     def text(self, value):
@@ -24,15 +24,6 @@ class Entry(Cell_Inheritable, tk.Entry):
             self.cDisposables.append(value.subscribe(AssignText))
             return
         #
-        state = self["state"]
-        self.configure(state='normal')
-        self.delete(0, tk.END)
-        if value is not None:
-            if self.ValidationHandler is not None:
-                value = self.ValidationHandler(value)
-            self.insert(0, value)
-        self.configure(state=state)
-
-    def select_text(self):
-        self.select_range(0, 'end')
-        self.icursor('end')
+        if self.ValidationHandler is not None:
+            value = self.ValidationHandler(value)
+        self.configure(text=value)
