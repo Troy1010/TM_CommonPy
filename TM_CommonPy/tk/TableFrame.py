@@ -20,22 +20,10 @@ class TableFrame(tk.Frame):
             child.destroy()
 
     def GetMaxColumn(self):
-        iMaxCol = 0
-        for w in self.winfo_children():
-            if 'column' not in w.grid_info():
-                continue
-            if iMaxCol < w.grid_info()['column']:
-                iMaxCol = w.grid_info()['column']
-        return iMaxCol
+        return self.grid_size()[0] - 1
 
     def GetMaxRow(self):
-        iMaxRow = 0
-        for w in self.winfo_children():
-            if 'row' not in w.grid_info():
-                continue
-            if iMaxRow < w.grid_info()['row']:
-                iMaxRow = w.grid_info()['row']
-        return iMaxRow
+        return self.grid_size()[1] - 1
 
     def InsertRow(self, row):
         for w in self.winfo_children():
