@@ -9,6 +9,16 @@ class TableFrame(tk.Frame):
         except IndexError:
             return None
 
+    def ClearTable(self):
+        for child in self.winfo_children():
+            child.grid_forget()
+            child.destroy()
+
+    def ClearRow(self, row):
+        for child in self.grid_slaves(row):
+            child.grid_forget()
+            child.destroy()
+
     def GetMaxColumn(self):
         iMaxCol = 0
         for w in self.winfo_children():
