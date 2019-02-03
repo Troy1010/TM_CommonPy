@@ -18,7 +18,7 @@ class Entry(Cell_Inheritable, tk.Entry):
     @text.setter
     def text(self, value):
         # text
-        if isinstance(value, rx.subjects.BehaviorSubject):
+        if isinstance(value, rx.Observable):
             def AssignText(value):
                 self.text = value
             self.cDisposables.append(value.subscribe(AssignText))
