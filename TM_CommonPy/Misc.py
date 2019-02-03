@@ -48,6 +48,15 @@ def DisplayDone():
     os.system('pause')
 
 
+def StringizeException(e):
+    s = ("===================================================================="
+         + "\nTraceback (most recent call last):\n"
+         + ''.join(traceback.format_tb(e.__traceback__))
+         + "\n" + type(e).__name__ + ": " + str(e)
+         )
+    return s
+
+
 def DisplayException(e):
     print("====================================================================")
     print("Traceback (most recent call last):")
@@ -193,6 +202,40 @@ def IsCollection(vVar):
     else:
         bCanIter = True
     return bCanIter and not isinstance(vVar, str)
+
+
+IsIterable = IsCollection
+
+
+def PrintAndQuit(e):
+    print(StringizeException(e))
+    sys.exit(0)
+
+
+class Hook:
+    def __init__(self, method, *args, on_error=None, bPrintAndQuitOnError=False):
+        self.method = method
+        self.cHandlers = []
+        self.on_error = on_error
+        self.bPrintAndQuitOnError = bPrintAndQuitOnError
+        for arg in args:
+            if not IsIterable(arg):
+                self.cHandlers.append(arg)
+            else:
+                self.cHandlers.extend(arg)
+        self.cHandlers.append(method)
+
+    def __call__(self, *args, **kwargs):
+        for vHandler in self.cHandlers:
+            if callable(vHandler):
+                try:
+                    vHandler()
+                except Exception as e:
+                    if self.on_error:
+                        self.on_error(e)
+                    if self.bPrintAndQuitOnError:
+                        PrintAndQuit(e)
+                    raise
 
 
 def RunPowerShellScript(sScriptFile):
