@@ -13,9 +13,13 @@ class Cell_Inheritable():
     def AddDisposable(self, disposable):
         self.cDisposables.append(disposable)
 
-    def destroy(self):
+    def DisposeDisposables(self):
         for disposable in self.cDisposables:
             disposable.dispose()
+        self.cDisposables.clear()
+
+    def destroy(self):
+        self.DisposeDisposables()
         super().destroy()
 
     @property
