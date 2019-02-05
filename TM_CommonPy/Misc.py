@@ -212,6 +212,15 @@ def PrintAndQuit(e):
     sys.exit(0)
 
 
+def WithinRange(value, min_, max_):
+    if value < min_:
+        return min_
+    elif value > max_:
+        return max_
+    else:
+        return value
+
+
 class Hook:
     def __init__(self, method, *args, on_error=None, bPrintAndQuitOnError=False):
         self.method = method
