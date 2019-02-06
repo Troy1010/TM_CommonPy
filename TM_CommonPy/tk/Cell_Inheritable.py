@@ -1,10 +1,11 @@
 
 
 class Cell_Inheritable():
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, validation=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.cDisposables = []
-        self._ValidationHandler = None
+        assert(callable(validation) or validation is None)
+        self._ValidationHandler = validation
 
     def MakeValid(self):
         """ Useful if text is changed outside of its setter """
