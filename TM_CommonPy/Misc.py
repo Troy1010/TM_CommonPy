@@ -222,8 +222,7 @@ def WithinRange(value, min_, max_):
 
 
 class Hook:
-    def __init__(self, method, *args, on_error=None, bPrintAndQuitOnError=False):
-        self.method = method
+    def __init__(self, *args, on_error=None, bPrintAndQuitOnError=False):
         self.cHandlers = []
         self.on_error = on_error
         self.bPrintAndQuitOnError = bPrintAndQuitOnError
@@ -232,7 +231,6 @@ class Hook:
                 self.cHandlers.append(arg)
             else:
                 self.cHandlers.extend(arg)
-        self.cHandlers.append(method)
 
     def __call__(self, *args, **kwargs):
         for vHandler in self.cHandlers:
