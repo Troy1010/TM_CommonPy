@@ -39,3 +39,6 @@ class Cell_Inheritable():
     @property
     def row(self):
         return self.grid_info()['row']
+
+    def FocusNothing(self):
+        self.winfo_toplevel().focus_set()

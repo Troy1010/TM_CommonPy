@@ -1,14 +1,15 @@
 import tkinter as tk
 from .Cell_Inheritable import Cell_Inheritable
+from .DirectStream_Inheritable import DirectStream_Inheritable
 import rx
 
 
-class Button(Cell_Inheritable, tk.Button):
+class Button(DirectStream_Inheritable, Cell_Inheritable, tk.Button):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # trigger text setter
-        if 'text' in kwargs:
+        if 'stream' not in kwargs and 'text' in kwargs:
             self.text = kwargs['text']
 
     @property
@@ -17,13 +18,9 @@ class Button(Cell_Inheritable, tk.Button):
 
     @text.setter
     def text(self, value):
-        # text
-        if isinstance(value, rx.subjects.BehaviorSubject):
-            def AssignText(value):
-                self.text = value
-            self.cDisposables.append(value.subscribe(AssignText))
-            return
-        #
+        assert(not isinstance(value, rx.Observable))
         if self.ValidationHandler is not None:
             value = self.ValidationHandler(value)
+        if self.DisplayHandler is not None:
+            value = self.DisplayHandler(value)
         self.configure(text=value)
