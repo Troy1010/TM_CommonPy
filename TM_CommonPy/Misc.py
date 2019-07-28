@@ -236,7 +236,7 @@ class Hook:
         for vHandler in self.cHandlers:
             if callable(vHandler):
                 try:
-                    vHandler()
+                    vHandler(*args, **kwargs)
                 except Exception as e:
                     if self.on_error:
                         self.on_error(e)
